@@ -1,5 +1,5 @@
-﻿using System.Net.Http.Json;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace WebApi.test
 {
@@ -8,9 +8,14 @@ namespace WebApi.test
         private readonly HttpClient _httpClient = factory.CreateClient();
 
 
-        protected async  Task<HttpResponseMessage> DoPost(string method, object request, string culture = "en")
+        protected async Task<HttpResponseMessage> DoPost(
+           string method,
+           object request,
+           string token = "",
+           string culture = "en")
         {
             ChangeRequestCulture(culture);
+            AuthorizeRequest(token);
 
             return await _httpClient.PostAsJsonAsync(method, request);
         }
@@ -32,7 +37,7 @@ namespace WebApi.test
         }
 
 
-        private void ChangeRequestCulture(string culture) 
+        private void ChangeRequestCulture(string culture)
         {
             if (_httpClient.DefaultRequestHeaders.Contains("Accept-Language"))
                 _httpClient.DefaultRequestHeaders.Remove("Accept-Language");

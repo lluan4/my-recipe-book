@@ -24,6 +24,8 @@ namespace MyRecipeBook.Application.UseCases.Recipe
             _difficultyReadOnlyRepository = difficultyReadOnlyRepository;
             _dishTypeReadOnlyRepository = dishTypeReadOnlyRepository;
 
+
+
             RuleFor(recipe => recipe.Title)
                 .SetValidator(new StringValidator<RequestRecipeJson>("Title", 100));
 
@@ -33,6 +35,7 @@ namespace MyRecipeBook.Application.UseCases.Recipe
                 .WithMessage(ResourceMessageHelper.FieldNotSupported("CookingTime"))
                 .MustAsync(async (cookingTime, cancellation) =>
                 {
+                    Console.WriteLine(cookingTime);
                     if (cookingTime == null) return true;
 
                     try
