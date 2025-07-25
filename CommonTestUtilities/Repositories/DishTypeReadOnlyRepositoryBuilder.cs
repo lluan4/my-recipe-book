@@ -13,24 +13,24 @@ namespace CommonTestUtilities.Repositories
 
         public IDishTypeReadOnlyRepository Build() => _repository.Object;
 
-        public void ExistsDishType(DishType dishType)
+        public void ExistsDishType(RecipeDishType dishType)
         {
             _repository.Setup(repository => repository.ExistsDishType(dishType)).ReturnsAsync(true);
         }
 
-        public void DoesNotExistDishType(DishType dishType)
+        public void DoesNotExistDishType(RecipeDishType dishType)
         {
             _repository.Setup(repository => repository.ExistsDishType(dishType)).ReturnsAsync(false);
         }
 
         public void ExistsAnyDishType()
         {
-            _repository.Setup(repository => repository.ExistsDishType(It.IsAny<DishType>())).ReturnsAsync(true);
+            _repository.Setup(repository => repository.ExistsDishType(It.IsAny<RecipeDishType>())).ReturnsAsync(true);
         }
 
         public void DoesNotExistAnyDishType()
         {
-            _repository.Setup(repository => repository.ExistsDishType(It.IsAny<DishType>())).ReturnsAsync(false);
+            _repository.Setup(repository => repository.ExistsDishType(It.IsAny<RecipeDishType>())).ReturnsAsync(false);
         }
     }
 }

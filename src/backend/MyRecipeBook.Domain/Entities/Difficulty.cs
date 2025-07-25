@@ -1,8 +1,9 @@
-﻿using Difficulty = MyRecipeBook.Domain.Enums.Difficulty;
+﻿
+using MyRecipeBook.Domain.Enums;
 
 namespace MyRecipeBook.Domain.Entities
 {
-    public class Difficulty : ReferenceEntityBase<Difficulty>
+    public class Difficulty : ReferenceEntityBase<RecipeDifficulty>
     {
     }
 }

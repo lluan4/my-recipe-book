@@ -4,6 +4,6 @@ namespace MyRecipeBook.Domain.Repositories.CookingTime
 {
     public interface ICookingTimeReadOnlyRepository
     {
-        Task<bool> ExistsCookingTime(Enums.CookingTime cookingTime);
+        Task<bool> ExistsCookingTime(Enums.RecipeCookingTime cookingTime);
     }
 }

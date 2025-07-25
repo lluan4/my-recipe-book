@@ -4,7 +4,7 @@ namespace MyRecipeBook.Domain.Repositories.DishType
 {
     public interface IDishTypeReadOnlyRepository
     {
-        Task<bool> ExistsDishType(Enums.DishType dishType);
-        Task<List<Enums.DishType>> GetExistingDishTypes(IEnumerable<Enums.DishType> dishTypes);
+        Task<bool> ExistsDishType(Enums.RecipeDishType dishType);
+        Task<List<Enums.RecipeDishType>> GetExistingDishTypes(IEnumerable<Enums.RecipeDishType> dishTypes);
     }
 }

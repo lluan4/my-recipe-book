@@ -1,6 +1,6 @@
 ﻿namespace MyRecipeBook.Domain.Enums
 {
-    public enum Difficulty
+    public enum RecipeDifficulty
     {
         Low = 1,
         Medium = 2,

@@ -6,7 +6,7 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 {
     public class DifficultyRepository(MyRecipeBookDbContext dbContext) : IDifficultyReadOnlyRepository
     {
-        public async Task<bool> ExistsDifficulty(Difficulty difficulty)
+        public async Task<bool> ExistsDifficulty(RecipeDifficulty difficulty)
         {
             return await dbContext.Difficulty.AnyAsync((System.Linq.Expressions.Expression<Func<Domain.Entities.Difficulty, bool>>)(d => d.Id == difficulty));
 

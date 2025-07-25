@@ -4,14 +4,14 @@ namespace MyRecipeBook.Application.Mappers
 {
     public static class DifficultyMapper
     {
-        public static Domain.Enums.Difficulty ToDomain(
-            Communication.Enums.Difficulty difficultyEnum)
+        public static Domain.Enums.RecipeDifficulty ToDomain(
+            Communication.Enums.RecipeDifficulty difficultyEnum)
         {
             return difficultyEnum switch
             {
-                Communication.Enums.Difficulty.Low => Domain.Enums.Difficulty.Low,
-                Communication.Enums.Difficulty.Medium => Domain.Enums.Difficulty.Medium,
-                Communication.Enums.Difficulty.High => Domain.Enums.Difficulty.High,
+                Communication.Enums.RecipeDifficulty.Low => Domain.Enums.RecipeDifficulty.Low,
+                Communication.Enums.RecipeDifficulty.Medium => Domain.Enums.RecipeDifficulty.Medium,
+                Communication.Enums.RecipeDifficulty.High => Domain.Enums.RecipeDifficulty.High,
                 _ => throw new InvalidOperationException(ResourceMessageHelper.FieldNotSupported("Difficulty"))
             };
         }

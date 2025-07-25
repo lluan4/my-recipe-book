@@ -6,7 +6,7 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 {
     public class CookingTimeRepository(MyRecipeBookDbContext dbContext) : ICookingTimeReadOnlyRepository
     {
-        public async Task<bool> ExistsCookingTime(CookingTime cookingTime)
+        public async Task<bool> ExistsCookingTime(RecipeCookingTime cookingTime)
         {
             return await dbContext.CookingTime.AnyAsync(ct => ct.Id == cookingTime);
         }
