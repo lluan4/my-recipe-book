@@ -27,7 +27,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       # Java (o scanner Sonar precisa)
-      - uses: actions/setup-java@3
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
