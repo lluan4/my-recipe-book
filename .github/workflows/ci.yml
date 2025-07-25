@@ -5,7 +5,7 @@ on:
     branches: [ "dev" ]
   pull_request:
     branches: [ "dev" ]
-  workflow_dispatch:        # dispara manualmente, permitindo escolher a configuração
+  workflow_dispatch:
     inputs:
       buildConfiguration:
         description: "Debug ou Release"
@@ -13,26 +13,31 @@ on:
 
 env:
   BUILD_CONFIGURATION: ${{ github.event.inputs.buildConfiguration || 'Release' }}
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SONAR_TOKEN:       ${{ secrets.SONAR_TOKEN }}
+  PROJECT_KEY:       lluanlima94_back     # ← ajuste
+  ORGANIZATION_KEY:  lluanlima94          # ← ajuste
 
 jobs:
   build:
-    runs-on: ubuntu-latest     # runner hospedado pelo GitHub
+    runs-on: ubuntu-latest
     steps:
+      # 1. Checkout
       - uses: actions/checkout@v4
-
-      # .NET SDK
-      - uses: actions/setup-dotnet@v4      # ação oficial para instalar dotnet :contentReference[oaicite:0]{index=0}
         with:
-          dotnet-version: '9.0.x'
+          fetch-depth: 0                 # Sonar recomenda histórico completo
 
-      # Java (o scanner Sonar precisa)
+      # 2. JDK 17 (requisito do scanner)
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # Cache NuGet
+      # 3. .NET SDK 9
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      # 4. Cache NuGet
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -40,28 +45,66 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      # --- Build & Test ---
-      - name: Restore
+      # 5. Cache SonarCloud (pacotes e scanner)
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: |
+            ${{ runner.os }}-sonar
+
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: ./.sonar/scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: |
+            ${{ runner.os }}-sonar-scanner
+
+      - name: Install dotnet‑sonarscanner (if not cached)
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path .sonar/scanner
+
+      # 6. Restore / Build / Test (+ cobertura)
+      - name: dotnet restore
         run: dotnet restore
 
-      - name: Build
-        run: dotnet build --configuration $BUILD_CONFIGURATION --no-restore
+      - name: dotnet build
+        run: dotnet build --configuration "$BUILD_CONFIGURATION" --no-restore
 
-      - name: Test
-        run: >
-          dotnet test
-          --configuration $BUILD_CONFIGURATION
-          --collect "XPlat Code Coverage"
-          --results-directory ./TestResults
-          --no-build
+      - name: dotnet test (OpenCover)
+        run: |
+          dotnet test \
+            --configuration "$BUILD_CONFIGURATION" \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            --logger "trx" \
+            --no-build
 
-      # --- SonarCloud ---
-      - name: Sonar Scan
-        uses: SonarSource/sonarqube-scan-action@v2    # ação oficial (Server e Cloud) :contentReference[oaicite:1]{index=1}
-        with:
-          projectKey: 'lluanlima94_back'
-          organization: 'lluanlima94'
-          args: -Dsonar.cs.opencover.reportsPaths=**/coverage.cobertura.xml
+      # 7. SonarCloud – begin / build / test / end
+      - name: SonarCloud begin / build / test / end
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          .sonar/scanner/dotnet-sonarscanner begin \
+            /k:"$PROJECT_KEY" \
+            /o:"$ORGANIZATION_KEY" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.token="$SONAR_TOKEN" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
-      - name: Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@v1  # falha o job se gate reprovar :contentReference[oaicite:2]{index=2}
+          dotnet build --configuration "$BUILD_CONFIGURATION" --no-restore
+
+          dotnet test \
+            --configuration "$BUILD_CONFIGURATION" \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            --logger "trx" \
+            --no-build
+
+          .sonar/scanner/dotnet-sonarscanner end \
+            /d:sonar.token="$SONAR_TOKEN"
