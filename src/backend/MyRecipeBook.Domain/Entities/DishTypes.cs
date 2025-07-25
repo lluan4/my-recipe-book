@@ -2,5 +2,5 @@
 
 namespace MyRecipeBook.Domain.Entities
 {
-    public class DishTypes : ReferenceEntityBase<DishType> {}
+    public class DishTypes : ReferenceEntityBase<RecipeDishType> {}
 }

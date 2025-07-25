@@ -12,24 +12,24 @@ namespace CommonTestUtilities.Repositories
 
         public ICookingTimeReadOnlyRepository Build() => _repository.Object;
 
-        public void ExistsCookingTime(CookingTime cookingTime)
+        public void ExistsCookingTime(RecipeCookingTime cookingTime)
         {
             _repository.Setup(repository => repository.ExistsCookingTime(cookingTime)).ReturnsAsync(true);
         }
 
-        public void DoesNotExistCookingTime(CookingTime cookingTime)
+        public void DoesNotExistCookingTime(RecipeCookingTime cookingTime)
         {
             _repository.Setup(repository => repository.ExistsCookingTime(cookingTime)).ReturnsAsync(false);
         }
 
         public void ExistsAnyCookingTime()
         {
-            _repository.Setup(repository => repository.ExistsCookingTime(It.IsAny<CookingTime>())).ReturnsAsync(true);
+            _repository.Setup(repository => repository.ExistsCookingTime(It.IsAny<RecipeCookingTime>())).ReturnsAsync(true);
         }
 
         public void DoesNotExistAnyCookingTime()
         {
-            _repository.Setup(repository => repository.ExistsCookingTime(It.IsAny<CookingTime>())).ReturnsAsync(false);
+            _repository.Setup(repository => repository.ExistsCookingTime(It.IsAny<RecipeCookingTime>())).ReturnsAsync(false);
         }
     }
 }
