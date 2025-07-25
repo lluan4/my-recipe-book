@@ -25,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout do código-fonte
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -75,19 +74,31 @@ jobs:
 
     # 7. Iniciar a análise do SonarScanner
     - name: SonarScanner begin step
+      shell: bash
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin \
-          /o:"${{ env.ORGANIZATION_KEY }}" \
-          /k:"${{ env.PROJECT_KEY }}" \
-          /d:sonar.host.url="${{ env.SONAR_HOST }}" \
-          /d:sonar.token="${{ env.SONAR_TOKEN }}" \
-          /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/coverage.opencover.xml" \
-          /d:sonar.cs.vstest.reportsPaths="${{ github.workspace }}/test-results.trx" \
-          /d:sonar.pullrequest.provider="github" \
-          /d:sonar.pullrequest.github.repository="${{ github.repository }}" \
-          /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
-          /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
-          /d:sonar.pullrequest.base="${{ github.base_ref }}"
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          ./.sonar/scanner/dotnet-sonarscanner begin \
+            /o:"${{ env.ORGANIZATION_KEY }}" \
+            /k:"${{ env.PROJECT_KEY }}" \
+            /d:sonar.host.url="${{ env.SONAR_HOST }}" \
+            /d:sonar.token="${{ env.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/coverage.opencover.xml" \
+            /d:sonar.cs.vstest.reportsPaths="${{ github.workspace }}/test-results.trx" \
+            /d:sonar.pullrequest.provider="github" \
+            /d:sonar.pullrequest.github.repository="${{ github.repository }}" \
+            /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
+            /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
+            /d:sonar.pullrequest.base="${{ github.base_ref }}"
+        # Para eventos de Push, executa a análise padrão na branch
+        else
+          ./.sonar/scanner/dotnet-sonarscanner begin \
+            /o:"${{ env.ORGANIZATION_KEY }}" \
+            /k:"${{ env.PROJECT_KEY }}" \
+            /d:sonar.host.url="${{ env.SONAR_HOST }}" \
+            /d:sonar.token="${{ env.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/coverage.opencover.xml" \
+            /d:sonar.cs.vstest.reportsPaths="${{ github.workspace }}/test-results.trx"
+        fi
 
     # 8. Build do projeto
     - name: Build project
