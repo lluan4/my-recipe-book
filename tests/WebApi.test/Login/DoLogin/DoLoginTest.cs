@@ -4,7 +4,6 @@ using MyRecipeBook.Exceptions;
 using Shouldly;
 using System.Globalization;
 using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
 using WebApi.test.InlineData;
 
@@ -59,8 +58,6 @@ namespace WebApi.test.Login.DoLogin
         public async Task Error_Login_Invalid(string culture)
         {
             var request = RequestLoginJsonBuilder.Build();
-            
-
 
             var response = await DoPost(_method, request, culture);
 
