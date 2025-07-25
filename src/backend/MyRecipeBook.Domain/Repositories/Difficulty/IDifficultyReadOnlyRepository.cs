@@ -4,6 +4,6 @@ namespace MyRecipeBook.Domain.Repositories.Difficulty
 {
     public interface IDifficultyReadOnlyRepository
     {
-        Task<bool> ExistsDifficulty(DifficultyEnum difficulty);
+        Task<bool> ExistsDifficulty(Enums.Difficulty difficulty);
     }
 }

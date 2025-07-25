@@ -1,6 +1,6 @@
 ﻿namespace MyRecipeBook.Communication.Enums
 {
-    public enum DishTypeEnum
+    public enum DishType
     {
         Breakfast = 1,
         Lunch = 2,
