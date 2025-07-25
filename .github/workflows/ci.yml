@@ -14,9 +14,9 @@ on:
 env:
   BUILD_CONFIGURATION: ${{ github.event.inputs.buildConfiguration || 'Release' }}
   SONAR_TOKEN:       ${{ secrets.SONAR_TOKEN }}
-  ORGANIZATION_KEY:  ${{ vars.SONAR_ORG    || 'lluanlima94-github' }}
-  PROJECT_KEY:       ${{ vars.SONAR_PROJ   || 'lluanlima94_back'    }}
-  SONAR_HOST:        ${{ vars.SONAR_HOST   || 'https://sonarcloud.io' }}
+  ORGANIZATION_KEY:  lluanlima94-github
+  PROJECT_KEY:       lluanlima94-github_my-recipe-book
+  SONAR_HOST:        ${{ vars.SONAR_HOST }}
 
 jobs:
   build:
