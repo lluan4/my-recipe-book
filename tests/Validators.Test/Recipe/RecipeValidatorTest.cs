@@ -1,6 +1,5 @@
 using CommonTestUtilities.Repositories;
 using CommonTestUtilities.Requests;
-using MyRecipeBook.Application.UseCases.Recipe;
 using MyRecipeBook.Communication.Enums;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
@@ -9,7 +8,7 @@ namespace Validators.Test.Recipe;
 
 public class RecipeValidatorTest
 {
-    private RecipeValidator CreateValidator(
+    private static RecipeValidator CreateValidator(
         Action<CookingTimeReadOnlyRepositoryBuilder>? cookingTimeSetup = null,
         Action<DifficultyReadOnlyRepositoryBuilder>? difficultySetup = null,
         Action<DishTypeReadOnlyRepositoryBuilder>? dishTypeSetup = null)
@@ -58,7 +57,7 @@ public class RecipeValidatorTest
         var validator = CreateValidator();
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.CookingTime = (MyRecipeBook.Communication.Enums.CookingTimeEnum?)1000;
+        request.CookingTimeId = (MyRecipeBook.Communication.Enums.CookingTimeEnum?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -75,7 +74,7 @@ public class RecipeValidatorTest
         );
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.CookingTime = (MyRecipeBook.Communication.Enums.CookingTimeEnum?)1000;
+        request.CookingTimeId = (MyRecipeBook.Communication.Enums.CookingTimeEnum?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -90,7 +89,7 @@ public class RecipeValidatorTest
         var validator = CreateValidator();
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.CookingTime = null;
+        request.CookingTimeId = null;
 
         var result = await validator.ValidateAsync(request);
 
@@ -103,7 +102,7 @@ public class RecipeValidatorTest
         var validator = CreateValidator();
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.Difficulty = (MyRecipeBook.Communication.Enums.DifficultyEnum?)1000;
+        request.DifficultyId = (MyRecipeBook.Communication.Enums.DifficultyEnum?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -120,7 +119,7 @@ public class RecipeValidatorTest
         );
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.Difficulty = (MyRecipeBook.Communication.Enums.DifficultyEnum?)1000;
+        request.DifficultyId = (MyRecipeBook.Communication.Enums.DifficultyEnum?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -135,7 +134,7 @@ public class RecipeValidatorTest
         var validator = CreateValidator();
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.Difficulty = null;
+        request.DifficultyId = null;
 
         var result = await validator.ValidateAsync(request);
 

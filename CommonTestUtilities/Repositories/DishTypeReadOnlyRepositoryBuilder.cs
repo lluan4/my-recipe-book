@@ -1,6 +1,7 @@
 ﻿using Moq;
 using MyRecipeBook.Domain.Enums;
-using MyRecipeBook.Domain.Repositories.Recipe;
+using MyRecipeBook.Domain.Repositories.DishType;
+
 
 namespace CommonTestUtilities.Repositories
 {

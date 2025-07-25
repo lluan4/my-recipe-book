@@ -11,8 +11,6 @@ namespace MyRecipeBook.Infrastructure.DataAccess
 
         public DbSet<User> Users { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
-        public DbSet<Instruction> Instructions { get; set; }
         public DbSet<CookingTime> CookingTime { get; set; }
         public DbSet<Difficulty> Difficulty { get; set; }
         public DbSet<DishTypes> DishTypes { get; set; }
