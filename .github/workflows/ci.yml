@@ -2,9 +2,9 @@ name: CI (.NET + SonarCloud – scanner CLI)
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "develop" ]
   workflow_dispatch:
     inputs:
       buildConfiguration:
@@ -73,7 +73,7 @@ jobs:
           /d:sonar.host.url="$SONAR_HOST" \
           /d:sonar.token="$SONAR_TOKEN" \
           /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-          /d:sonar.branch.name="${{ github.head_ref || github.ref_name }}"
+          
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
