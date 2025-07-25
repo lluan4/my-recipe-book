@@ -73,7 +73,7 @@ jobs:
           /d:sonar.host.url="$SONAR_HOST" \
           /d:sonar.token="$SONAR_TOKEN" \
           /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-          /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+          /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx"
           
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
