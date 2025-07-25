@@ -2,9 +2,9 @@ name: CI (.NET + SonarCloud – scanner CLI)
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "develop" ]
   workflow_dispatch:
     inputs:
       buildConfiguration:
