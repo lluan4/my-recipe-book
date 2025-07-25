@@ -1,4 +1,4 @@
-name: CI (.NET + SonarCloud)
+name: CI (.NET + SonarCloud – scanner CLI)
 
 on:
   push:
@@ -14,97 +14,82 @@ on:
 env:
   BUILD_CONFIGURATION: ${{ github.event.inputs.buildConfiguration || 'Release' }}
   SONAR_TOKEN:       ${{ secrets.SONAR_TOKEN }}
-  PROJECT_KEY:       lluanlima94_back     # ← ajuste
-  ORGANIZATION_KEY:  lluanlima94          # ← ajuste
+  ORGANIZATION_KEY:  ${{ vars.SONAR_ORG    || 'lluanlima94-github' }}
+  PROJECT_KEY:       ${{ vars.SONAR_PROJ   || 'lluanlima94_back'    }}
+  SONAR_HOST:        ${{ vars.SONAR_HOST   || 'https://sonarcloud.io' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      # 1. Checkout
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0                 # Sonar recomenda histórico completo
+    # ───────── 2. Checkout ─────────
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0        
 
-      # 2. JDK 17 (requisito do scanner)
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
+    # ───────── 3. JDK (scanner exige Java ≥ 17) ─────────
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
 
-      # 3. .NET SDK 9
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
+    # ───────── 4. .NET SDK ─────────
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
 
-      # 4. Cache NuGet
-      - uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
+    # ───────── 5. Caches (NuGet + Sonar) ─────────
+    - uses: actions/cache@v4             # NuGet
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          nuget-${{ runner.os }}-
 
-      # 5. Cache SonarCloud (pacotes e scanner)
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: |
-            ${{ runner.os }}-sonar
+    - uses: actions/cache@v4             # Cache do scanner
+      id: sonar-scanner
+      with:
+        path: .sonar/scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: |
+          ${{ runner.os }}-sonar-scanner
 
-      - name: Cache SonarCloud scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v4
-        with:
-          path: ./.sonar/scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: |
-            ${{ runner.os }}-sonar-scanner
+    - name: Instalar dotnet‑sonarscanner (se não veio do cache)
+      if: steps.sonar-scanner.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p .sonar/scanner
+        dotnet tool update dotnet-sonarscanner --tool-path .sonar/scanner
 
-      - name: Install dotnet‑sonarscanner (if not cached)
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p .sonar/scanner
-          dotnet tool update dotnet-sonarscanner --tool-path .sonar/scanner
+    # ───────── 6. Restore ─────────
+    - run: dotnet restore
 
-      # 6. Restore / Build / Test (+ cobertura)
-      - name: dotnet restore
-        run: dotnet restore
+    # ───────── 7. Sonar BEGIN ─────────
+    - name: Sonar – begin
+      run: |
+        .sonar/scanner/dotnet-sonarscanner begin \
+          /o:"$ORGANIZATION_KEY" \
+          /k:"$PROJECT_KEY" \
+          /d:sonar.host.url="$SONAR_HOST" \
+          /d:sonar.token="$SONAR_TOKEN" \
+          /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: dotnet build
-        run: dotnet build --configuration "$BUILD_CONFIGURATION" --no-restore
+    # ───────── 8. Build ─────────
+    - run: dotnet build --configuration "$BUILD_CONFIGURATION" --no-restore
 
-      - name: dotnet test (OpenCover)
-        run: |
-          dotnet test \
-            --configuration "$BUILD_CONFIGURATION" \
-            /p:CollectCoverage=true \
-            /p:CoverletOutputFormat=opencover \
-            --logger "trx" \
-            --no-build
+    # ───────── 9. Teste + cobertura (gera coverage.opencover.xml) ─────────
+    - run: |
+        dotnet test \
+          --configuration "$BUILD_CONFIGURATION" \
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=opencover \
+          --logger "trx" \
+          --no-build
 
-      # 7. SonarCloud – begin / build / test / end
-      - name: SonarCloud begin / build / test / end
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          .sonar/scanner/dotnet-sonarscanner begin \
-            /k:"$PROJECT_KEY" \
-            /o:"$ORGANIZATION_KEY" \
-            /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-
-          dotnet build --configuration "$BUILD_CONFIGURATION" --no-restore
-
-          dotnet test \
-            --configuration "$BUILD_CONFIGURATION" \
-            /p:CollectCoverage=true \
-            /p:CoverletOutputFormat=opencover \
-            --logger "trx" \
-            --no-build
-
-          .sonar/scanner/dotnet-sonarscanner end \
-            /d:sonar.token="$SONAR_TOKEN"
+    # ───────── 10. Sonar END ─────────
+    - name: Sonar – end (qualidade)
+      run: .sonar/scanner/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+      env: 
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
