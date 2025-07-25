@@ -1,0 +1,67 @@
+name: CI (.NET + SonarCloud)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:        # dispara manualmente, permitindo escolher a configuração
+    inputs:
+      buildConfiguration:
+        description: "Debug ou Release"
+        default: "Release"
+
+env:
+  BUILD_CONFIGURATION: ${{ github.event.inputs.buildConfiguration || 'Release' }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest     # runner hospedado pelo GitHub
+    steps:
+      - uses: actions/checkout@v4
+
+      # .NET SDK
+      - uses: actions/setup-dotnet@v4      # ação oficial para instalar dotnet :contentReference[oaicite:0]{index=0}
+        with:
+          dotnet-version: '8.0.x'
+
+      # Java (o scanner Sonar precisa)
+      - uses: actions/setup-java@3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Cache NuGet
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      # --- Build & Test ---
+      - name: Restore
+        run: dotnet restore '**/*.sln'
+
+      - name: Build
+        run: dotnet build '**/*.sln' --configuration $BUILD_CONFIGURATION --no-restore
+
+      - name: Test
+        run: >
+          dotnet test '**/*Tests.csproj'
+          --configuration $BUILD_CONFIGURATION
+          --collect "XPlat Code Coverage"
+          --results-directory ./TestResults
+          --no-build
+
+      # --- SonarCloud ---
+      - name: Sonar Scan
+        uses: SonarSource/sonarqube-scan-action@v2    # ação oficial (Server e Cloud) :contentReference[oaicite:1]{index=1}
+        with:
+          projectKey: 'lluanlima94_back'
+          organization: 'lluanlima94'
+          args: -Dsonar.cs.opencover.reportsPaths=**/coverage.cobertura.xml
+
+      - name: Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1  # falha o job se gate reprovar :contentReference[oaicite:2]{index=2}
