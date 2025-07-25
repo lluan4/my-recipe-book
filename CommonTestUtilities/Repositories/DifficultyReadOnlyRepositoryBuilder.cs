@@ -12,24 +12,24 @@ namespace CommonTestUtilities.Repositories
 
         public IDifficultyReadOnlyRepository Build() => _repository.Object;
 
-        public void ExistsDifficulty(DifficultyEnum difficulty)
+        public void ExistsDifficulty(Difficulty difficulty)
         {
             _repository.Setup(repository => repository.ExistsDifficulty(difficulty)).ReturnsAsync(true);
         }
 
-        public void DoesNotExistDifficulty(DifficultyEnum difficulty)
+        public void DoesNotExistDifficulty(Difficulty difficulty)
         {
             _repository.Setup(repository => repository.ExistsDifficulty(difficulty)).ReturnsAsync(false);
         }
 
         public void ExistsAnyDifficulty()
         {
-            _repository.Setup(repository => repository.ExistsDifficulty(It.IsAny<DifficultyEnum>())).ReturnsAsync(true);
+            _repository.Setup(repository => repository.ExistsDifficulty(It.IsAny<Difficulty>())).ReturnsAsync(true);
         }
 
         public void DoesNotExistAnyDifficulty()
         {
-            _repository.Setup(repository => repository.ExistsDifficulty(It.IsAny<DifficultyEnum>())).ReturnsAsync(false);
+            _repository.Setup(repository => repository.ExistsDifficulty(It.IsAny<Difficulty>())).ReturnsAsync(false);
         }
     }
 }

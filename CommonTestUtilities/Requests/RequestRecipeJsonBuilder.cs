@@ -13,10 +13,10 @@ namespace CommonTestUtilities.Requests
 
             return new Faker<RequestRecipeJson>()
                  .RuleFor(r => r.Title, f => f.Lorem.Word())
-                 .RuleFor(r => r.CookingTimeId, f => f.PickRandom<CookingTimeEnum>())
-                 .RuleFor(r => r.DifficultyId, f => f.PickRandom<DifficultyEnum>())
+                 .RuleFor(r => r.CookingTimeId, f => f.PickRandom<CookingTime>())
+                 .RuleFor(r => r.DifficultyId, f => f.PickRandom<Difficulty>())
                  .RuleFor(r => r.Ingredients, f => f.Make(3, () => f.Commerce.ProductName()))
-                 .RuleFor(r => r.DishTypes, f => f.Make(3, () => f.PickRandom<DishTypeEnum>()))
+                 .RuleFor(r => r.DishTypes, f => f.Make(3, () => f.PickRandom<DishType>()))
                  .RuleFor(r => r.Instructions, f => f.Make(3, () => new RequestInstructionJson
                  {
                      Description = f.Lorem.Paragraph(),

@@ -1,6 +1,6 @@
-﻿namespace MyRecipeBook.Domain.Enums
+﻿namespace MyRecipeBook.Communication.Enums
 {
-    public enum CookingTimeEnum
+    public enum CookingTime
     {
         Less_10_Minutes = 1,
         Between_10_30_Minutes = 2,

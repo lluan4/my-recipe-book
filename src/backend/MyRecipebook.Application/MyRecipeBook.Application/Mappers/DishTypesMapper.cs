@@ -4,18 +4,18 @@ namespace MyRecipeBook.Application.Mappers
 {
     public static class DishTypesMapper
     {
-        public static Domain.Enums.DishTypeEnum ToDomain(
-            Communication.Enums.DishTypeEnum dishType)
+        public static Domain.Enums.DishType ToDomain(
+            Communication.Enums.DishType dishType)
         {
             return dishType switch
             {
-                Communication.Enums.DishTypeEnum.Snack => Domain.Enums.DishTypeEnum.Snack,
-                Communication.Enums.DishTypeEnum.Lunch => Domain.Enums.DishTypeEnum.Lunch,
-                Communication.Enums.DishTypeEnum.Appertizers => Domain.Enums.DishTypeEnum.Appertizers,
-                Communication.Enums.DishTypeEnum.Breakfast => Domain.Enums.DishTypeEnum.Breakfast,
-                Communication.Enums.DishTypeEnum.Drinks => Domain.Enums.DishTypeEnum.Drinks,
-                Communication.Enums.DishTypeEnum.Dessert => Domain.Enums.DishTypeEnum.Dessert,
-                Communication.Enums.DishTypeEnum.Dinner => Domain.Enums.DishTypeEnum.Dinner,
+                Communication.Enums.DishType.Snack => Domain.Enums.DishType.Snack,
+                Communication.Enums.DishType.Lunch => Domain.Enums.DishType.Lunch,
+                Communication.Enums.DishType.Appertizers => Domain.Enums.DishType.Appertizers,
+                Communication.Enums.DishType.Breakfast => Domain.Enums.DishType.Breakfast,
+                Communication.Enums.DishType.Drinks => Domain.Enums.DishType.Drinks,
+                Communication.Enums.DishType.Dessert => Domain.Enums.DishType.Dessert,
+                Communication.Enums.DishType.Dinner => Domain.Enums.DishType.Dinner,
                 _ => throw new InvalidOperationException(ResourceMessageHelper.FieldNotSupported("DishType"))
             };
         }

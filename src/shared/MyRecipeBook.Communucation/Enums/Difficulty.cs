@@ -1,6 +1,6 @@
 ﻿namespace MyRecipeBook.Communication.Enums
 {
-    public enum DifficultyEnum
+    public enum Difficulty
     {
         Low = 1,
         Medium = 2,

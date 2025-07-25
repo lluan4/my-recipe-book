@@ -41,7 +41,7 @@ namespace MyRecipeBook.Application.Services.AutoMapper
                     dest.Item, opt => opt.MapFrom(src => src)
                 );
 
-            CreateMap<DishTypeEnum, Domain.Entities.DishTypes>()
+            CreateMap<DishType, Domain.Entities.DishTypes>()
                 .ForMember(dest =>
                     dest.Id, opt => opt.MapFrom(src => src)
                 );
@@ -49,7 +49,7 @@ namespace MyRecipeBook.Application.Services.AutoMapper
             CreateMap<RequestInstructionJson, Domain.Entities.Instruction>()
                 .ForMember(dest => dest.RecipeId, opt => opt.Ignore());
 
-            CreateMap<DishTypeEnum, Domain.Entities.RecipesDishTypes>()
+            CreateMap<DishType, Domain.Entities.RecipesDishTypes>()
                 .ForMember(dest => dest.DishTypeId, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.RecipeId, opt => opt.Ignore())
                 .ForMember(dest => dest.Recipe, opt => opt.Ignore())

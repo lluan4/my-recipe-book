@@ -14,7 +14,6 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Register
     public class RegisterRecipeUseCase : IRegisterRecipeUseCase
     {
         private readonly IRecipeWriteOnlyRepository _repository;
-        //private readonly IRecipesDishTypeWriteOnlyRepository _recipesDishTypeWriteOnlyRepository;
 
         private readonly ICookingTimeReadOnlyRepository _repositoryCookingTime;
         private readonly IDifficultyReadOnlyRepository _repositoryDifficultyTime;
@@ -59,13 +58,6 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Register
             recipe.Instructions = _mapper.Map<IList<Domain.Entities.Instruction>>(instructions);
 
             recipe.RecipeDishTypes = _mapper.Map<IList<Domain.Entities.RecipesDishTypes>>(request.DishTypes);
-
-            //var recipesDishTypes = request.DishTypes.Select(dishType => new Domain.Entities.RecipesDishTypes
-            //{
-            //    DishTypeId = DishTypesMapper.ToDomain(dishType)
-            //}).ToList();
-
-            //recipe.RecipeDishTypes = recipesDishTypes;
 
             await _repository.Add(recipe);
 

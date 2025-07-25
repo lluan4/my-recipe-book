@@ -1,5 +1,6 @@
 using CommonTestUtilities.Repositories;
 using CommonTestUtilities.Requests;
+using MyRecipeBook.Application.UseCases.Recipe;
 using MyRecipeBook.Communication.Enums;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
@@ -57,7 +58,7 @@ public class RecipeValidatorTest
         var validator = CreateValidator();
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.CookingTimeId = (MyRecipeBook.Communication.Enums.CookingTimeEnum?)1000;
+        request.CookingTimeId = (MyRecipeBook.Communication.Enums.CookingTime?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -74,7 +75,7 @@ public class RecipeValidatorTest
         );
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.CookingTimeId = (MyRecipeBook.Communication.Enums.CookingTimeEnum?)1000;
+        request.CookingTimeId = (MyRecipeBook.Communication.Enums.CookingTime?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -102,7 +103,7 @@ public class RecipeValidatorTest
         var validator = CreateValidator();
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.DifficultyId = (MyRecipeBook.Communication.Enums.DifficultyEnum?)1000;
+        request.DifficultyId = (MyRecipeBook.Communication.Enums.Difficulty?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -119,7 +120,7 @@ public class RecipeValidatorTest
         );
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.DifficultyId = (MyRecipeBook.Communication.Enums.DifficultyEnum?)1000;
+        request.DifficultyId = (MyRecipeBook.Communication.Enums.Difficulty?)1000;
 
         var result = await validator.ValidateAsync(request);
 
@@ -212,7 +213,7 @@ public class RecipeValidatorTest
         var validator = CreateValidator();
 
         var request = RequestRecipeJsonBuilder.Build();
-        request.DishTypes.Add((DishTypeEnum)1000);
+        request.DishTypes.Add((DishType)1000);
 
         var result = await validator.ValidateAsync(request);
 
