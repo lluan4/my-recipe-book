@@ -3,7 +3,6 @@ using MyRecipeBook.Exceptions;
 using Shouldly;
 using System.Globalization;
 using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
 using WebApi.test.InlineData;
 
@@ -11,7 +10,7 @@ namespace WebApi.test.User.Register
 {
     public class RegisterUserTest : MyRecipeBookClassFixture
     {
-       
+
 
         private readonly string _method = "user";
         public RegisterUserTest(CustomWebApplicationFactory factory) : base(factory) { }
