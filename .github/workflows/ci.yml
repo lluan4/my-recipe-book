@@ -42,7 +42,7 @@ jobs:
 
       # --- Build & Test ---
       - name: Restore
-        run: dotnet restore '**/*.sln'
+        run: dotnet restore
 
       - name: Build
         run: dotnet build '**/*.sln' --configuration $BUILD_CONFIGURATION --no-restore
