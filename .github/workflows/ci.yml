@@ -22,7 +22,6 @@ jobs:
       - uses: actions/checkout@v4
 
       # .NET SDK
-      - name: Setup .NET 9 SDK
       - uses: actions/setup-dotnet@v4      # ação oficial para instalar dotnet :contentReference[oaicite:0]{index=0}
         with:
           dotnet-version: '9.0.x'
