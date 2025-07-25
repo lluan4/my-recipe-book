@@ -2,9 +2,9 @@ name: CI (.NET + SonarCloud)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "dev" ]
   workflow_dispatch:        # dispara manualmente, permitindo escolher a configuração
     inputs:
       buildConfiguration:
