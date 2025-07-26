@@ -14,18 +14,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necessário para o SonarCloud analisar o histórico
+          fetch-depth: 0 
 
-      # Passo 1: Configurar a versão LTS do Java (requerido pelo SonarScanner)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
 
-      # O passo 'setup-dotnet' foi removido para usar a versão padrão do runner (que inclui .NET 9)
-
-      # Passo 2: Cache para as ferramentas do Sonar
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -48,19 +44,17 @@ jobs:
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
-      # Passo 3: Executar a análise
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necessário para a análise de PRs
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # Comando 'begin' ATUALIZADO com o padrão de caminho correto para os relatórios
+         
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"lluan94-github_my-recipe-book" /o:"lluan94-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.projectBaseDir="$env:GITHUB_WORKSPACE"
 
           dotnet build --configuration Release
 
-          # Comando de teste para gerar o relatório no formato OpenCover
           dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage;Format=opencover" --results-directory "TestResults"
 
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
