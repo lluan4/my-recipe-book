@@ -42,11 +42,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          dotnet sonarscanner begin /
-          k:"lluan94-github_my-recipe-book" /
-          o:"lluan94-github" /
-          d:sonar.token="${{ secrets.SONAR_TOKEN }}" 
-          d:sonar.host.url="https://sonarcloud.io"
+          dotnet sonarscanner begin \
+          /o:"lluan94-github" \
+          /k:"lluan94-github_my-recipe-book" \
+          /d:sonar.host.url="https://sonarcloud.io" \
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           
           dotnet build
           dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
