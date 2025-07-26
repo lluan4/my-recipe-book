@@ -1,6 +1,5 @@
 ﻿using CommonTestUtilities.Requests;
 using CommonTestUtilities.Tokens;
-using MyRecipeBook.Communication.Enums;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
 using System.Text.Json;
@@ -24,9 +23,6 @@ namespace WebApi.test.Recipe.Register
         {
             var request = RequestRecipeJsonBuilder.Build();
             request.Title = string.Empty;
-            request.CookingTimeId = null;
-            request.DifficultyId = null;
-            request.DishTypes = [RecipeDishType.Drinks];
 
             var token = JwtTokensGeneratorBuilder.Build().Generate(_userIdentifier);
 
