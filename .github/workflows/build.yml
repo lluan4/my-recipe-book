@@ -1,11 +1,9 @@
 name: Build, Test and Analyze
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - develop
-  pull_request:
-    types: [opened, synchronize, reopened]
-
 jobs:
   build-and-analyze:
     name: Build and Analyze
