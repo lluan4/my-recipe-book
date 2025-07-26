@@ -2,15 +2,10 @@ name: CI with SonarCloud
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [  develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [  develop ]
     types: [opened, synchronize, reopened]
-
-env:
-  DOTNET_VERSION: '9.0.x'
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build-and-analyze:
@@ -18,113 +13,54 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # Checkout do código
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Necessário para o SonarCloud analisar o histórico
+        fetch-depth: 0  # Necessário para o SonarCloud
 
-    # Setup do .NET 9
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: '9.0.x'
 
-    # Cache de pacotes NuGet
-    - name: Cache NuGet packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
-
-    # Instalação do SonarScanner
     - name: Install SonarScanner
       run: |
         dotnet tool install --global dotnet-sonarscanner
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-    # Instalação do Coverlet para cobertura de código
-    - name: Install Coverlet
-      run: |
-        dotnet tool install --global coverlet.console
-        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
-    # Início da análise do SonarCloud
     - name: Begin SonarCloud analysis
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         dotnet sonarscanner begin \
           /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
           /o:"${{ secrets.SONAR_ORGANIZATION }}" \
-          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+          /d:sonar.token="$SONAR_TOKEN" \
           /d:sonar.host.url="https://sonarcloud.io" \
           /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
           /d:sonar.cs.vstest.reportsPaths="**/*.trx" \
           /d:sonar.coverage.exclusions="**Test*.cs,**/Program.cs,**/Migrations/**" \
-          /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**" \
-          /d:sonar.verbose=true
+          /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**"
 
-    # Restaurar dependências
     - name: Restore dependencies
       run: dotnet restore
 
-    # Build do projeto
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    # Executar testes com cobertura usando Coverlet
     - name: Run tests with coverage
       run: |
         dotnet test --no-build --configuration Release \
           --logger "trx;LogFileName=test-results.trx" \
-          --logger "console;verbosity=detailed" \
           --collect:"XPlat Code Coverage" \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
-          /p:CoverletOutput=./coverage/ \
-          /p:Exclude="[*]*.Program,[*]*.Startup,[*.Test*]*,[xunit.*]*" \
-          /p:ExcludeByAttribute="Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute"
+          /p:CoverletOutput=./coverage/
 
-    # Finalizar análise do SonarCloud
     - name: End SonarCloud analysis
-      run: |
-        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-
-    # Upload dos resultados de teste como artefatos (opcional)
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results
-        path: |
-          **/*.trx
-          **/coverage.opencover.xml
-        retention-days: 7
-
-    # Publicar resultados de teste no GitHub
-    - name: Publish test results
-      uses: dorny/test-reporter@v1
-      if: always()
-      with:
-        name: Test Results
-        path: '**/*.trx'
-        reporter: dotnet-trx
-
-  # Job adicional para verificar o Quality Gate (opcional)
-  quality-gate:
-    name: SonarCloud Quality Gate
-    needs: build-and-analyze
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    
-    steps:
-    - name: Check Quality Gate
-      uses: SonarSource/sonarcloud-github-action@master
-      with:
-        args: >
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
