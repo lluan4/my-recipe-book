@@ -51,11 +51,12 @@ jobs:
       # Passo 3: Executar a análise
       - name: Build and analyze
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necessário para a análise de PRs
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # Comando 'begin' ATUALIZADO para usar o formato OpenCover e definir o diretório base
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"lluan94-github_my-recipe-book" /o:"lluan94-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/coverage.opencover.xml" /d:sonar.projectBaseDir="."
+          # Comando 'begin' ATUALIZADO para usar um caminho absoluto para o diretório base
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"lluan94-github_my-recipe-book" /o:"lluan94-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/coverage.opencover.xml" /d:sonar.projectBaseDir="$env:GITHUB_WORKSPACE"
 
           dotnet build --configuration Release
 
