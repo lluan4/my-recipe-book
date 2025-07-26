@@ -1,66 +1,75 @@
-name: CI with SonarCloud
+name: build-test-analyze
 
 on:
   push:
-    branches: [  develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [  develop ]
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read          # necessário para baixar o código
+  pull-requests: write    # permite decorar PRs com o Quality Gate
+
 jobs:
-  build-and-analyze:
-    name: Build, Test and Analyze
+  sonarcloud:
+    name: Build, Test & SonarCloud
     runs-on: ubuntu-latest
-    
+
+    # Variáveis e segredos já configurados no repositório
+    env:
+      DOTNET_VERSION: 9.0.x                      # ajuste se usar outra versão
+      SONAR_TOKEN:        ${{ secrets.SONAR_TOKEN }}
+      SONAR_PROJECT_KEY:  ${{ vars.SONAR_PROJECT_KEY }}
+      SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Necessário para o SonarCloud
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Install SonarScanner
-      run: |
-        dotnet tool install --global dotnet-sonarscanner
-        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Begin SonarCloud analysis
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        dotnet sonarscanner begin \
-          /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
-          /o:"${{ secrets.SONAR_ORGANIZATION }}" \
-          /d:sonar.token="$SONAR_TOKEN" \
-          /d:sonar.host.url="https://sonarcloud.io" \
-          /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-          /d:sonar.cs.vstest.reportsPaths="**/*.trx" \
-          /d:sonar.coverage.exclusions="**Test*.cs,**/Program.cs,**/Migrations/**" \
-          /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**"
+      - name: Install global tools (SonarScanner + Coverlet)
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet tool install --global coverlet.console
 
-    - name: Restore dependencies
-      run: dotnet restore
+      # ---------------------------- SonarCloud BEGIN ---------------------------
+      - name: SonarCloud – Begin analysis
+        run: |
+          dotnet sonarscanner begin \
+            /k:"${{ env.SONAR_PROJECT_KEY }}" \
+            /o:"${{ env.SONAR_ORGANIZATION }}" \
+            /d:sonar.token="${{ env.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.vstest.reportsPaths="**/*.trx" \
+            /d:sonar.coverage.exclusions="**Test*.cs,**/Program.cs,**/Migrations/**" \
+            /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**" \
+            /d:sonar.verbose=true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # para decorar PRs
+      # ------------------------------------------------------------------------
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Run tests with coverage
-      run: |
-        dotnet test --no-build --configuration Release \
-          --logger "trx;LogFileName=test-results.trx" \
-          --collect:"XPlat Code Coverage" \
-          /p:CollectCoverage=true \
-          /p:CoverletOutputFormat=opencover \
-          /p:CoverletOutput=./coverage/
+      - name: Test with coverage (Coverlet)
+        run: |
+          dotnet test --configuration Release --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            /p:CoverletOutput=./coverage.opencover.xml \
+            --logger:"trx"
+        # Se os projetos de teste estiverem em pasta específica, defina `working-directory`
 
-    - name: End SonarCloud analysis
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+      # ----------------------------- SonarCloud END ----------------------------
+      - name: SonarCloud – End analysis & upload
+        run: dotnet sonarscanner end /d:sonar.token="${{ env.SONAR_TOKEN }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # ------------------------------------------------------------------------
