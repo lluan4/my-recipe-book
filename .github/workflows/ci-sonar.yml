@@ -2,22 +2,22 @@ name: build-test-analyze
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ develop ]
   pull_request:
     types: [opened, synchronize, reopened]
 
 permissions:
-  contents: read          # necessário para baixar o código
-  pull-requests: write    # permite decorar PRs com o Quality Gate
+  contents: read          
+  pull-requests: write    
 
 jobs:
   sonarcloud:
     name: Build, Test & SonarCloud
     runs-on: ubuntu-latest
 
-    # Variáveis e segredos já configurados no repositório
+    
     env:
-      DOTNET_VERSION: 9.0.x                      # ajuste se usar outra versão
+      DOTNET_VERSION: 9.0.x                    
       SONAR_TOKEN:        ${{ secrets.SONAR_TOKEN }}
       SONAR_PROJECT_KEY:  ${{ vars.SONAR_PROJECT_KEY }}
       SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
@@ -39,7 +39,7 @@ jobs:
           dotnet tool install --global dotnet-sonarscanner
           dotnet tool install --global coverlet.console
 
-      # ---------------------------- SonarCloud BEGIN ---------------------------
+      
       - name: SonarCloud – Begin analysis
         run: |
           dotnet sonarscanner begin \
@@ -52,8 +52,8 @@ jobs:
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**" \
             /d:sonar.verbose=true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # para decorar PRs
-      # ------------------------------------------------------------------------
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+      
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
@@ -65,11 +65,11 @@ jobs:
             /p:CoverletOutputFormat=opencover \
             /p:CoverletOutput=./coverage.opencover.xml \
             --logger:"trx"
-        # Se os projetos de teste estiverem em pasta específica, defina `working-directory`
+       
 
-      # ----------------------------- SonarCloud END ----------------------------
+     
       - name: SonarCloud – End analysis & upload
         run: dotnet sonarscanner end /d:sonar.token="${{ env.SONAR_TOKEN }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # ------------------------------------------------------------------------
+     
