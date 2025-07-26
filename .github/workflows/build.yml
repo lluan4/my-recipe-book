@@ -64,9 +64,7 @@ jobs:
           /o:"lluan94-github" `
           /d:sonar.token="$Env:SONAR_TOKEN" `
           /d:sonar.host.url="https://sonarcloud.io" `
-          # caminho(s) do relatório de cobertura:
           /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml"
-
     - name: Build (Release)
       run: dotnet build --configuration Release --no-restore
 
@@ -77,7 +75,6 @@ jobs:
         --no-build
         --collect:"XPlat Code Coverage"
         --results-directory TestResults
-
     - name: SonarCloud — End & Upload
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
