@@ -37,12 +37,24 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Build and analyze
+      - name: Build, test and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"lluan94-github_my-recipe-book" /o:"lluan94-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.cobertura.reportsPaths="**/coverage.cobertura.xml"; dotnet build --configuration Release; dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"; .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build --configuration Release
-          dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          .\.sonar\scanner\dotnet-sonarscanner begin `
+            /k:"lluan94-github_my-recipe-book" `
+            /o:"lluan94-github" `
+            /d:sonar.token="$Env:SONAR_TOKEN" `
+            /d:sonar.host.url="https://sonarcloud.io" `
+            /d:sonar.cs.cobertura.reportsPaths="**/coverage.xml"
+
+          dotnet build -c Release
+
+          dotnet test -c Release --no-build `
+            /p:CollectCoverage=true `
+            /p:CoverletOutputFormat=cobertura `
+            /p:CoverletOutput=./TestResults/coverage.xml
+
+          .\.sonar\scanner\dotnet-sonarscanner end `
+            /d:sonar.token="$Env:SONAR_TOKEN"
