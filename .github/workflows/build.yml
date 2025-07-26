@@ -55,12 +55,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # Comando 'begin' ATUALIZADO para usar um caminho absoluto para o diretório base
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"lluan94-github_my-recipe-book" /o:"lluan94-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/coverage.opencover.xml" /d:sonar.projectBaseDir="$env:GITHUB_WORKSPACE"
+          # Comando 'begin' ATUALIZADO com o padrão de caminho correto para os relatórios
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"lluan94-github_my-recipe-book" /o:"lluan94-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.projectBaseDir="$env:GITHUB_WORKSPACE"
 
           dotnet build --configuration Release
 
-          # Comando de teste ATUALIZADO para gerar o relatório no formato OpenCover
+          # Comando de teste para gerar o relatório no formato OpenCover
           dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage;Format=opencover" --results-directory "TestResults"
 
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
