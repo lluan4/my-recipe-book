@@ -68,6 +68,10 @@ jobs:
         mkdir -p ./.sonar/scanner
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
+    - name: Install Coverlet
+      run: |
+        dotnet tool install --global coverlet.console || true
+
     # 6. Restaurar dependências do projeto
     - name: Restore dependencies
       run: dotnet restore
@@ -111,12 +115,18 @@ jobs:
           --configuration ${{ env.BUILD_CONFIGURATION }} \
           --no-build \
           --collect:"XPlat Code Coverage" \
-          --logger "trx;LogFileName=${{ github.workspace }}/test-results.trx" \
-          --results-directory "${{ github.workspace }}/" \
-          -p:CollectCoverage=true \
-          -p:CoverletOutputFormat=opencover \
-          -p:CoverletOutput="${{ github.workspace }}/coverage.opencover.xml" \
-          -p:MergeWith="${{ github.workspace }}/coverage.opencover.xml"
+          --logger "trx" \
+          --results-directory ./TestResults \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+   
+    - name: List coverage files
+      run: |
+        echo "=== Finding coverage files ==="
+        find . -name "*.opencover.xml" -type f
+        find . -name "coverage.opencover.xml" -type f
+        echo "=== TestResults directory ==="
+        ls -la ./TestResults || echo "TestResults directory not found"
 
     # 10. Finalizar a análise e enviar os resultados para o SonarCloud
     - name: SonarScanner end step
