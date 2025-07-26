@@ -12,7 +12,7 @@ namespace WebApi.test
 
         private MyRecipeBook.Domain.Entities.User _user = default!;
         private string _password = string.Empty;
-       
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Test")
@@ -52,6 +52,30 @@ namespace WebApi.test
             (_user, _password) = UserBuilder.Build();
 
             dbContext.Users.Add(_user);
+
+            dbContext.CookingTime.AddRange(
+                new MyRecipeBook.Domain.Entities.CookingTime { Id = MyRecipeBook.Domain.Enums.RecipeCookingTime.Less_10_Minutes, Description = "< 10 mins" },
+                new MyRecipeBook.Domain.Entities.CookingTime { Id = MyRecipeBook.Domain.Enums.RecipeCookingTime.Between_10_30_Minutes, Description = "10-30 mins" },
+                new MyRecipeBook.Domain.Entities.CookingTime { Id = MyRecipeBook.Domain.Enums.RecipeCookingTime.Between_30_60_Minutes, Description = "30-60 mins" },
+                new MyRecipeBook.Domain.Entities.CookingTime { Id = MyRecipeBook.Domain.Enums.RecipeCookingTime.Greater_60_Minutes, Description = "> 60 mins" }
+            );
+
+            dbContext.Difficulty.AddRange(
+                new MyRecipeBook.Domain.Entities.Difficulty { Id = MyRecipeBook.Domain.Enums.RecipeDifficulty.Low, Description = "Low" },
+                new MyRecipeBook.Domain.Entities.Difficulty { Id = MyRecipeBook.Domain.Enums.RecipeDifficulty.Medium, Description = "Medium" },
+                new MyRecipeBook.Domain.Entities.Difficulty { Id = MyRecipeBook.Domain.Enums.RecipeDifficulty.High, Description = "High" }
+            );
+
+            dbContext.DishTypes.AddRange(
+                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Breakfast, Description = "Breakfast" },
+                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Lunch, Description = "Lunch" },
+                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Appertizers, Description = "Appetizers" },
+                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Snack, Description = "Snack" },
+                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Dessert, Description = "Dessert" },
+                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Dinner, Description = "Dinner" },
+                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Drinks, Description = "Drinks" }
+            );
+
             dbContext.SaveChanges();
         }
     }
