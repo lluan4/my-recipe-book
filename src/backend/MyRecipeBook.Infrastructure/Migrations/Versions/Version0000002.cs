@@ -1,28 +1,30 @@
 ﻿using FluentMigrator;
+using MyRecipeBook.Infrastructure.Persistence;
 
 namespace MyRecipeBook.Infrastructure.Migrations.Versions
 {
     [Migration(DatabaseVersions.TABLE_RECIPES, "Create table to save the recipes' information")]
     public class Version0000002 : VersionBase
     {
+
         public override void Up()
         {
             // Tabelas de referência
-            CreateReferenceTable("CookingTime");
-            Insert.IntoTable("CookingTime")
+            CreateReferenceTable(DbNames.Tables.CookingTime);
+            Insert.IntoTable(DbNames.Tables.CookingTime)
                 .Row(new { Description = "< 10 mins" })
                 .Row(new { Description = "10-30 mins" })
                 .Row(new { Description = "30-60 mins" })
                 .Row(new { Description = "> 60 mins" });
 
-            CreateReferenceTable("Difficulty");
-            Insert.IntoTable("Difficulty")
+            CreateReferenceTable(DbNames.Tables.Difficulty);
+            Insert.IntoTable(DbNames.Tables.Difficulty)
                 .Row(new { Description = "Low" })
                 .Row(new { Description = "Medium" })
                 .Row(new { Description = "High" });
 
-            CreateReferenceTable("DishTypes");
-            Insert.IntoTable("DishTypes")
+            CreateReferenceTable(DbNames.Tables.DishTypes);
+            Insert.IntoTable(DbNames.Tables.DishTypes)
                 .Row(new { Description = "Breakfast" })
                 .Row(new { Description = "Lunch" })
                 .Row(new { Description = "Appetizers" })
@@ -32,7 +34,7 @@ namespace MyRecipeBook.Infrastructure.Migrations.Versions
                 .Row(new { Description = "Drinks" });
 
             // Tabela principal
-            CreateTable("Recipes")
+            CreateTable(DbNames.Tables.Recipes)
                 .WithColumn("Title").AsString(200).NotNullable()
                 .WithColumn("CookingTimeId").AsInt32().Nullable()
                     .ForeignKey("FK_Recipe_CookingTime_Id", "CookingTime", "Id")
@@ -42,13 +44,13 @@ namespace MyRecipeBook.Infrastructure.Migrations.Versions
                     .ForeignKey("FK_Recipe_User_Id", "Users", "Id");
 
             // Tabelas dependentes
-            CreateTable("Ingredients")
+            CreateTable(DbNames.Tables.Ingredients)
                 .WithColumn("Item").AsString(100).NotNullable()
                 .WithColumn("RecipeId").AsInt64().NotNullable()
                     .ForeignKey("FK_Ingredient_Recipe_Id", "Recipes", "Id")
                         .OnDelete(System.Data.Rule.Cascade);
 
-            CreateTable("Instructions")
+            CreateTable(DbNames.Tables.Instructions)
                 .WithColumn("Step").AsInt32().NotNullable()
                 .WithColumn("Description").AsString(2000).NotNullable()
                 .WithColumn("RecipeId").AsInt64().NotNullable()
@@ -56,7 +58,7 @@ namespace MyRecipeBook.Infrastructure.Migrations.Versions
                         .OnDelete(System.Data.Rule.Cascade);
 
             // Tabela de ligação
-            CreateJunctionTable("RecipesDishTypes")
+            CreateJunctionTable(DbNames.Tables.RecipesDishTypes)
                 .WithColumn("RecipeId").AsInt64().NotNullable()
                     .ForeignKey("FK_RecipesDishTypes_Recipe_Id", "Recipes", "Id")
                         .OnDelete(System.Data.Rule.Cascade)
@@ -73,9 +75,9 @@ namespace MyRecipeBook.Infrastructure.Migrations.Versions
                 .Columns("RecipeId", "Step");
 
             // Índices para performance
-            Create.Index("IX_Recipes_UserId").OnTable("Recipes").OnColumn("UserId");
-            Create.Index("IX_Ingredients_RecipeId").OnTable("Ingredients").OnColumn("RecipeId");
-            Create.Index("IX_Instructions_RecipeId").OnTable("Instructions").OnColumn("RecipeId");
+            Create.Index("IX_Recipes_UserId").OnTable(DbNames.Tables.Recipes).OnColumn("UserId");
+            Create.Index("IX_Ingredients_RecipeId").OnTable(DbNames.Tables.Ingredients).OnColumn("RecipeId");
+            Create.Index("IX_Instructions_RecipeId").OnTable(DbNames.Tables.Instructions).OnColumn("RecipeId");
         }
     }
 }
