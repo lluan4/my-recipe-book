@@ -12,7 +12,7 @@ namespace WebApi.test.User.Register
     {
 
 
-        private readonly string _method = "user";
+        private readonly string METHOD = "user";
         public RegisterUserTest(CustomWebApplicationFactory factory) : base(factory) { }
 
         [Fact]
@@ -20,7 +20,7 @@ namespace WebApi.test.User.Register
         {
             var request = RequestRegisterUserJsonBuilder.Build();
 
-            var response = await DoPost(_method, request);
+            var response = await DoPost(METHOD, request);
 
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -48,7 +48,7 @@ namespace WebApi.test.User.Register
             request.Name = string.Empty;
 
 
-            var response = await DoPost(_method, request, culture);
+            var response = await DoPost(METHOD, request, culture);
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 

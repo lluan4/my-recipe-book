@@ -1,12 +1,7 @@
 ﻿using CommonTestUtilities.Requests;
 using CommonTestUtilities.Tokens;
-using MyRecipeBook.Exceptions;
 using Shouldly;
-using System.Globalization;
 using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using WebApi.test.InlineData;
 
 namespace WebApi.test.User.Update
 {
