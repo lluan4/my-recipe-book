@@ -7,8 +7,6 @@ using System.Text.RegularExpressions;
 namespace MyRecipeBook.Infrastructure.Migrations
 {
 
-
-
     public static class DatabaseMigration
     {
        
@@ -23,8 +21,6 @@ namespace MyRecipeBook.Infrastructure.Migrations
             var connectionStringBuilder = new MySqlConnectionStringBuilder(connectionString);
 
             var databaseName = connectionStringBuilder.Database;
-
-            var quotedName = $"`{databaseName.Replace("`", "``")}`";
 
             connectionStringBuilder.Remove("Database");
 
