@@ -11,7 +11,7 @@ namespace MyRecipeBook.Infrastructure.Migrations
 
     public static class DatabaseMigration
     {
-        private static readonly Regex _schemaNameRegex = new(@"^[A-Za-z0-9_]+$", RegexOptions.Compiled);
+       
         public static void Migrate(string connectionString, IServiceProvider serviceProvider)
         {
             EnsureDatabaseCreate(connectionString);
@@ -24,10 +24,6 @@ namespace MyRecipeBook.Infrastructure.Migrations
 
             var databaseName = connectionStringBuilder.Database;
 
-            if (!_schemaNameRegex.IsMatch(databaseName))
-                throw new InvalidOperationException(
-                    $"Nome de schema inválido: {databaseName}");
-
             var quotedName = $"`{databaseName.Replace("`", "``")}`";
 
             connectionStringBuilder.Remove("Database");
@@ -36,11 +32,12 @@ namespace MyRecipeBook.Infrastructure.Migrations
 
             var parameters = new DynamicParameters();
             parameters.Add("name", databaseName);
+            parameters.Add("databaseName", databaseName);
 
             var records = dbConnection.Query("SELECT * FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @name", parameters);
 
             if(!records.Any())
-                dbConnection.Execute($"CREATE DATABASE {quotedName}");
+                dbConnection.Execute($"CREATE DATABASE @databaseName", parameters);
             
         }
 

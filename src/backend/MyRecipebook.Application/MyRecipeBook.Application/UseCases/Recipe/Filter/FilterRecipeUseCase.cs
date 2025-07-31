@@ -43,7 +43,7 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Filter
             };
         }
 
-        private void Validate(RequestFilterRecipeJson request) 
+        private static void Validate(RequestFilterRecipeJson request) 
         {
             var validator = new FilterRecipeValidator();
 
