@@ -2,11 +2,16 @@
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
+using System.Text.RegularExpressions;
 
 namespace MyRecipeBook.Infrastructure.Migrations
 {
+
+
+
     public static class DatabaseMigration
     {
+        private static readonly Regex _schemaNameRegex = new(@"^[A-Za-z0-9_]+$", RegexOptions.Compiled);
         public static void Migrate(string connectionString, IServiceProvider serviceProvider)
         {
             EnsureDatabaseCreate(connectionString);
@@ -19,6 +24,12 @@ namespace MyRecipeBook.Infrastructure.Migrations
 
             var databaseName = connectionStringBuilder.Database;
 
+            if (!_schemaNameRegex.IsMatch(databaseName))
+                throw new InvalidOperationException(
+                    $"Nome de schema inválido: {databaseName}");
+
+            var quotedName = $"`{databaseName.Replace("`", "``")}`";
+
             connectionStringBuilder.Remove("Database");
 
             using var dbConnection = new MySqlConnection(connectionStringBuilder.ConnectionString);
@@ -29,7 +40,7 @@ namespace MyRecipeBook.Infrastructure.Migrations
             var records = dbConnection.Query("SELECT * FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @name", parameters);
 
             if(!records.Any())
-                dbConnection.Execute($"CREATE DATABASE {databaseName}");
+                dbConnection.Execute($"CREATE DATABASE {quotedName}");
             
         }
 
@@ -40,5 +51,8 @@ namespace MyRecipeBook.Infrastructure.Migrations
             runner.ListMigrations();
             runner.MigrateUp();
         }
+
+
+    
     }
 }
