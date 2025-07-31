@@ -28,13 +28,14 @@ builder.Services.AddSwaggerGen(c =>
     c.UseAllOfToExtendReferenceSchemas();
     c.AddSecurityDefinition(_bearer, new OpenApiSecurityScheme()
     {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = _bearer,
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme." +
         "Enter 'Bearer' [space] and then your token in the text input below." +
         "Example: 'Bearer 12345abcdef'",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = _bearer,
 
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
