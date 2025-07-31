@@ -1,7 +1,6 @@
 name: Build, Test and Analyze
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - develop
 jobs:
