@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MyRecipeBook.Communication.Request;
-using MyRecipeBook.Communication.Responses;
+using MyRecipeBook.Communication.Response;
 using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.CookingTime;
 using MyRecipeBook.Domain.Repositories.Difficulty;
