@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MyRecipeBook.Domain.Enums;
 using MyRecipeBook.Infrastructure.DataAccess;
 
 namespace WebApi.test
@@ -11,6 +12,7 @@ namespace WebApi.test
     {
 
         private MyRecipeBook.Domain.Entities.User _user = default!;
+        private MyRecipeBook.Domain.Entities.Recipe _recipe = default!;
         private string _password = string.Empty;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -47,11 +49,18 @@ namespace WebApi.test
         public string GetName() => _user.Name;
         public Guid GetUserIdentifier() => _user.UserIdentifier;
 
+        public string GetRecipeTitle() => _recipe.Title;
+        public RecipeDifficulty? GetDifficulty() => _recipe.DifficultyId;
+        public RecipeCookingTime? GetRecipeCookingTime() => _recipe.CookingTimeId;
+        public IList<RecipeDishType>? GetRecipeDishType() => _recipe.RecipeDishTypes.Select(rdt => rdt.DishTypeId).ToList();
+
         private void StartDatabase(MyRecipeBookDbContext dbContext)
         {
             (_user, _password) = UserBuilder.Build();
+            _recipe = RecipeBuilder.Build(user: _user);
 
             dbContext.Users.Add(_user);
+            dbContext.Recipes.Add(_recipe);
 
             dbContext.CookingTime.AddRange(
                 new MyRecipeBook.Domain.Entities.CookingTime { Id = MyRecipeBook.Domain.Enums.RecipeCookingTime.Less_10_Minutes, Description = "< 10 mins" },
