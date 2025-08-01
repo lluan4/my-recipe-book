@@ -2,7 +2,7 @@
 
 namespace MyRecipeBook.Domain.Entities
 {
-    [Table("Ingredients")]
+    [Table("ingredients")]
     public class Ingredient : EntityBase
     {
         public string Item { get; set; } = string.Empty;

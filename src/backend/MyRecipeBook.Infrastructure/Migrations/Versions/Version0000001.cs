@@ -1,4 +1,5 @@
 ﻿using FluentMigrator;
+using MyRecipeBook.Domain.Entities;
 
 namespace MyRecipeBook.Infrastructure.Migrations.Versions
 {
@@ -7,11 +8,11 @@ namespace MyRecipeBook.Infrastructure.Migrations.Versions
     {
         public override void Up()
         {
-           CreateTable("Users")
-                .WithColumn("Name").AsString(255).NotNullable()
-                .WithColumn("Email").AsString(255).NotNullable()
-                .WithColumn("Password").AsString(2000).NotNullable()
-                .WithColumn("UserIdentifier").AsGuid().NotNullable();
+            CreateTable(TableName<User>())
+                 .WithColumn(ColumnName<User>(r => r.Name)).AsString(255).NotNullable()
+                 .WithColumn(ColumnName<User>(r => r.Email)).AsString(255).NotNullable()
+                 .WithColumn(ColumnName<User>(r => r.Password)).AsString(2000).NotNullable()
+                 .WithColumn(ColumnName<User>(r => r.UserIdentifier)).AsGuid().NotNullable();
         }
     }
 }

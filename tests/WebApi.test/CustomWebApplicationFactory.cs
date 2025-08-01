@@ -67,13 +67,13 @@ namespace WebApi.test
             );
 
             dbContext.DishTypes.AddRange(
-                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Breakfast, Description = "Breakfast" },
-                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Lunch, Description = "Lunch" },
-                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Appertizers, Description = "Appetizers" },
-                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Snack, Description = "Snack" },
-                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Dessert, Description = "Dessert" },
-                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Dinner, Description = "Dinner" },
-                new MyRecipeBook.Domain.Entities.DishTypes { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Drinks, Description = "Drinks" }
+                new MyRecipeBook.Domain.Entities.DishType { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Breakfast, Description = "Breakfast" },
+                new MyRecipeBook.Domain.Entities.DishType { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Lunch, Description = "Lunch" },
+                new MyRecipeBook.Domain.Entities.DishType { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Appertizers, Description = "Appetizers" },
+                new MyRecipeBook.Domain.Entities.DishType { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Snack, Description = "Snack" },
+                new MyRecipeBook.Domain.Entities.DishType { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Dessert, Description = "Dessert" },
+                new MyRecipeBook.Domain.Entities.DishType { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Dinner, Description = "Dinner" },
+                new MyRecipeBook.Domain.Entities.DishType { Id = MyRecipeBook.Domain.Enums.RecipeDishType.Drinks, Description = "Drinks" }
             );
 
             dbContext.SaveChanges();

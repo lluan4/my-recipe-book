@@ -2,14 +2,13 @@
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
-using System.Text.RegularExpressions;
 
 namespace MyRecipeBook.Infrastructure.Migrations
 {
 
     public static class DatabaseMigration
     {
-       
+
         public static void Migrate(string connectionString, IServiceProvider serviceProvider)
         {
             EnsureDatabaseCreate(connectionString);
@@ -28,13 +27,12 @@ namespace MyRecipeBook.Infrastructure.Migrations
 
             var parameters = new DynamicParameters();
             parameters.Add("name", databaseName);
-            parameters.Add("databaseName", databaseName);
 
             var records = dbConnection.Query("SELECT * FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @name", parameters);
 
-            if(!records.Any())
-                dbConnection.Execute($"CREATE DATABASE @databaseName", parameters);
-            
+            if (!records.Any())
+                dbConnection.Execute($"CREATE DATABASE `{databaseName}`");
+
         }
 
         private static void MigrationDatabase(IServiceProvider serviceProvider)
@@ -46,6 +44,6 @@ namespace MyRecipeBook.Infrastructure.Migrations
         }
 
 
-    
+
     }
 }
