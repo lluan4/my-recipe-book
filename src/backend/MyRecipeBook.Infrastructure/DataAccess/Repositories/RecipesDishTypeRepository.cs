@@ -7,9 +7,9 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
     {
         private readonly MyRecipeBookDbContext _dbContext = dbContext;
 
-        public async Task Add(RecipesDishTypes entity) => await _dbContext.RecipesDishTypes.AddAsync(entity);
+        public async Task Add(RecipeDishType entity) => await _dbContext.RecipesDishTypes.AddAsync(entity);
 
-        public async Task AddRange(IList<RecipesDishTypes> entities) => await _dbContext.RecipesDishTypes.AddRangeAsync(entities);
+        public async Task AddRange(IList<RecipeDishType> entities) => await _dbContext.RecipesDishTypes.AddRangeAsync(entities);
 
     }
 }

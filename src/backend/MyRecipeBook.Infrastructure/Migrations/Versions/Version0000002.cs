@@ -1,83 +1,132 @@
 ﻿using FluentMigrator;
-using MyRecipeBook.Infrastructure.Persistence;
+using MyRecipeBook.Domain.Entities;
 using System.Data;
 
-namespace MyRecipeBook.Infrastructure.Migrations.Versions
+
+namespace MyRecipeBook.Infrastructure.Migrations.Versions;
+
+[Migration(DatabaseVersions.TABLE_RECIPES, "Create table to save the recipes' information")]
+public class Version0000002 : VersionBase
 {
-    [Migration(DatabaseVersions.TABLE_RECIPES, "Create table to save the recipes' information")]
-    public class Version0000002 : VersionBase
+    public override void Up()
     {
-        public override void Up()
-        {
-            // Tabelas de referência
-            CreateReferenceTable(DbObjects.CookingTime.TableName);
-            Insert.IntoTable(DbObjects.CookingTime.TableName)
-                .Row(new { Description = "< 10 mins" })
-                .Row(new { Description = "10-30 mins" })
-                .Row(new { Description = "30-60 mins" })
-                .Row(new { Description = "> 60 mins" });
+        /*--------------- Tabelas de referência ---------------*/
+        CreateReferenceTable(TableName<CookingTime>());
+        Insert.IntoTable(TableName<CookingTime>())
+              .Row(new { Description = "< 10 mins" })
+              .Row(new { Description = "10-30 mins" })
+              .Row(new { Description = "30-60 mins" })
+              .Row(new { Description = "> 60 mins" });
 
-            CreateReferenceTable(DbObjects.Difficulty.TableName);
-            Insert.IntoTable(DbObjects.Difficulty.TableName)
-                .Row(new { Description = "Low" })
-                .Row(new { Description = "Medium" })
-                .Row(new { Description = "High" });
+        CreateReferenceTable(TableName<Difficulty>());
+        Insert.IntoTable(TableName<Difficulty>())
+              .Row(new { Description = "Low" })
+              .Row(new { Description = "Medium" })
+              .Row(new { Description = "High" });
 
-            CreateReferenceTable(DbObjects.DishTypes.TableName);
-            Insert.IntoTable(DbObjects.DishTypes.TableName)
-                .Row(new { Description = "Breakfast" })
-                .Row(new { Description = "Lunch" })
-                .Row(new { Description = "Appetizers" })
-                .Row(new { Description = "Snack" })
-                .Row(new { Description = "Dessert" })
-                .Row(new { Description = "Dinner" })
-                .Row(new { Description = "Drinks" });
+        CreateReferenceTable(TableName<DishType>());
+        Insert.IntoTable(TableName<DishType>())
+              .Row(new { Description = "Breakfast" })
+              .Row(new { Description = "Lunch" })
+              .Row(new { Description = "Appetizers" })
+              .Row(new { Description = "Snack" })
+              .Row(new { Description = "Dessert" })
+              .Row(new { Description = "Dinner" })
+              .Row(new { Description = "Drinks" });
 
-            // Tabela principal
-            CreateTable(DbObjects.Recipes.TableName)
-                .WithColumn(DbObjects.Recipes.Title).AsString(200).NotNullable()
-                .WithColumn(DbObjects.Recipes.CookingTimeId).AsInt32().Nullable()
-                    .ForeignKey(DbObjects.Naming.FK(DbObjects.Recipes.TableName, DbObjects.CookingTime.TableName), DbObjects.CookingTime.TableName, DbObjects.CookingTime.Id)
-                .WithColumn(DbObjects.Recipes.DifficultyId).AsInt32().Nullable()
-                    .ForeignKey(DbObjects.Naming.FK(DbObjects.Recipes.TableName, DbObjects.Difficulty.TableName), DbObjects.Difficulty.TableName, DbObjects.Difficulty.Id)
-                .WithColumn(DbObjects.Recipes.UserId).AsInt64().NotNullable()
-                    .ForeignKey(DbObjects.Naming.FK(DbObjects.Recipes.TableName, DbObjects.Users.TableName), DbObjects.Users.TableName, DbObjects.Users.Id);
+        /*--------------- Tabela principal ---------------*/
+        CreateTable(TableName<Recipe>())
+            .WithColumn(ColumnName<Recipe>(r => r.Title)).AsString(200).NotNullable()
 
-            // Tabelas dependentes
-            CreateTable(DbObjects.Ingredients.TableName)
-                .WithColumn(DbObjects.Ingredients.Item).AsString(100).NotNullable()
-                .WithColumn(DbObjects.Ingredients.RecipeId).AsInt64().NotNullable()
-                    .ForeignKey(DbObjects.Naming.FK(DbObjects.Ingredients.TableName, DbObjects.Recipes.TableName), DbObjects.Recipes.TableName, DbObjects.Recipes.Id)
-                        .OnDelete(Rule.Cascade);
+            .WithColumn(ColumnName<Recipe>(r => r.CookingTimeId)).AsInt32().Nullable()
+                .ForeignKey(
+                    BuildForeignKeyName<Recipe, CookingTime>(),
+                    TableName<CookingTime>(),
+                    ColumnName<CookingTime>(c => c.Id))
 
-            CreateTable(DbObjects.Instructions.TableName)
-                .WithColumn(DbObjects.Instructions.Step).AsInt32().NotNullable()
-                .WithColumn(DbObjects.Instructions.Description).AsString(2000).NotNullable()
-                .WithColumn(DbObjects.Instructions.RecipeId).AsInt64().NotNullable()
-                    .ForeignKey(DbObjects.Naming.FK(DbObjects.Instructions.TableName, DbObjects.Recipes.TableName), DbObjects.Recipes.TableName, DbObjects.Recipes.Id)
-                        .OnDelete(Rule.Cascade);
+            .WithColumn(ColumnName<Recipe>(r => r.DifficultyId)).AsInt32().Nullable()
+                .ForeignKey(
+                    BuildForeignKeyName<Recipe, Difficulty>(),
+                    TableName<Difficulty>(),
+                    ColumnName<Difficulty>(d => d.Id))
 
-            // Tabela de ligação
-            CreateJunctionTable(DbObjects.RecipesDishTypes.TableName)
-                .WithColumn(DbObjects.RecipesDishTypes.RecipeId).AsInt64().NotNullable()
-                    .ForeignKey(DbObjects.Naming.FK(DbObjects.RecipesDishTypes.TableName, DbObjects.Recipes.TableName), DbObjects.Recipes.TableName, DbObjects.Recipes.Id)
-                        .OnDelete(Rule.Cascade)
-                .WithColumn(DbObjects.RecipesDishTypes.DishTypeId).AsInt32().NotNullable()
-                    .ForeignKey(DbObjects.Naming.FK(DbObjects.RecipesDishTypes.TableName, DbObjects.DishTypes.TableName), DbObjects.DishTypes.TableName, DbObjects.DishTypes.Id);
+            .WithColumn(ColumnName<Recipe>(r => r.UserId)).AsInt64().NotNullable()
+                .ForeignKey(
+                    BuildForeignKeyName<Recipe, User>(),
+                    TableName<User>(),
+                    ColumnName<User>(u => u.Id));
 
-            // Constraints e índices
-            Create.PrimaryKey(DbObjects.Naming.PK(DbObjects.RecipesDishTypes.TableName))
-                .OnTable(DbObjects.RecipesDishTypes.TableName)
-                .Columns(DbObjects.RecipesDishTypes.RecipeId, DbObjects.RecipesDishTypes.DishTypeId);
+        /*--------------- Dependentes ---------------*/
+        CreateTable(TableName<Ingredient>())
+            .WithColumn(ColumnName<Ingredient>(i => i.Item)).AsString(100).NotNullable()
+            .WithColumn(ColumnName<Ingredient>(i => i.RecipeId)).AsInt64().NotNullable()
+                .ForeignKey(
+                    BuildForeignKeyName<Ingredient, Recipe>(),
+                    TableName<Recipe>(),
+                    ColumnName<Recipe>(r => r.Id))
+                .OnDelete(Rule.Cascade);
 
-            Create.UniqueConstraint(DbObjects.Naming.UC(DbObjects.Instructions.TableName, DbObjects.Instructions.RecipeId, DbObjects.Instructions.Step))
-                .OnTable(DbObjects.Instructions.TableName)
-                .Columns(DbObjects.Instructions.RecipeId, DbObjects.Instructions.Step);
+        CreateTable(TableName<Instruction>())
+            .WithColumn(ColumnName<Instruction>(i => i.Step)).AsInt32().NotNullable()
+            .WithColumn(ColumnName<Instruction>(i => i.Description)).AsString(2000).NotNullable()
+            .WithColumn(ColumnName<Instruction>(i => i.RecipeId)).AsInt64().NotNullable()
+                .ForeignKey(
+                    BuildForeignKeyName<Instruction, Recipe>(),
+                    TableName<Recipe>(),
+                    ColumnName<Recipe>(r => r.Id))
+                .OnDelete(Rule.Cascade);
 
-            // Índices para performance
-            Create.Index(DbObjects.Naming.IX(DbObjects.Recipes.TableName, DbObjects.Recipes.UserId)).OnTable(DbObjects.Recipes.TableName).OnColumn(DbObjects.Recipes.UserId);
-            Create.Index(DbObjects.Naming.IX(DbObjects.Ingredients.TableName, DbObjects.Ingredients.RecipeId)).OnTable(DbObjects.Ingredients.TableName).OnColumn(DbObjects.Ingredients.RecipeId);
-            Create.Index(DbObjects.Naming.IX(DbObjects.Instructions.TableName, DbObjects.Instructions.RecipeId)).OnTable(DbObjects.Instructions.TableName).OnColumn(DbObjects.Instructions.RecipeId);
-        }
+        /*--------------- Junction ---------------*/
+        CreateJunctionTable(TableName<RecipeDishType>())
+            .WithColumn(ColumnName<RecipeDishType>(r => r.RecipeId)).AsInt64().NotNullable()
+                .ForeignKey(
+                    BuildForeignKeyName<RecipeDishType, Recipe>(),
+                    TableName<Recipe>(),
+                    ColumnName<Recipe>(r => r.Id))
+                .OnDelete(Rule.Cascade)
+
+            .WithColumn(ColumnName<RecipeDishType>(r => r.DishTypeId)).AsInt32().NotNullable()
+                .ForeignKey(
+                    BuildForeignKeyName<RecipeDishType, DishType>(),
+                    TableName<DishType>(),
+                    ColumnName<DishType>(d => d.Id));
+
+        Create.PrimaryKey(BuildPrimaryKeyName<RecipeDishType>())
+              .OnTable(TableName<RecipeDishType>())
+              .Columns(
+                  ColumnName<RecipeDishType>(r => r.RecipeId),
+                  ColumnName<RecipeDishType>(r => r.DishTypeId));
+
+        Create.UniqueConstraint(
+            BuildUniqueConstraintName<Instruction>(
+                ColumnName<Instruction>(i => i.RecipeId),
+                ColumnName<Instruction>(i => i.Step))
+            )
+              .OnTable(TableName<Instruction>())
+              .Columns(
+                  ColumnName<Instruction>(i => i.RecipeId),
+                  ColumnName<Instruction>(i => i.Step));
+
+        /*--------------- Índices ---------------*/
+        Create.Index(
+            BuildIndexName<Recipe>(
+                ColumnName<Recipe>(r => r.UserId))
+            )
+              .OnTable(TableName<Recipe>())
+              .OnColumn(ColumnName<Recipe>(r => r.UserId));
+
+        Create.Index(
+            BuildIndexName<Ingredient>(
+                ColumnName<Ingredient>(r => r.RecipeId))
+            )
+              .OnTable(TableName<Ingredient>())
+              .OnColumn(ColumnName<Ingredient>(i => i.RecipeId));
+
+        Create.Index(
+            BuildIndexName<Instruction>(
+                ColumnName<Instruction>(r => r.RecipeId))
+            )
+              .OnTable(TableName<Instruction>())
+              .OnColumn(ColumnName<Instruction>(i => i.RecipeId));
     }
 }

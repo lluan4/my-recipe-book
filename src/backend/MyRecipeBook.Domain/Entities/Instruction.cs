@@ -2,7 +2,7 @@
 
 namespace MyRecipeBook.Domain.Entities
 {
-    [Table("Instructions")]
+    [Table("instructions")]
     public class Instruction : EntityBase
     {
         public int Step { get; set; }

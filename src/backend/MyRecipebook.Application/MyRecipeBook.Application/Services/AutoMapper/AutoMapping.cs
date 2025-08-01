@@ -23,7 +23,7 @@ namespace MyRecipeBook.Application.Services.AutoMapper
             CreateMap<RequestRegisterUserJson, Domain.Entities.User>()
                 .ForMember(dest => dest.Password, opt => opt.Ignore());
 
-            CreateMap<int, Domain.Entities.RecipesDishTypes>()
+            CreateMap<int, Domain.Entities.RecipeDishType>()
                 .ForMember(dest => dest.DishTypeId, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.RecipeId, opt => opt.Ignore());
 
@@ -40,7 +40,7 @@ namespace MyRecipeBook.Application.Services.AutoMapper
                     dest.Item, opt => opt.MapFrom(src => src)
                 );
 
-            CreateMap<RecipeDishType, Domain.Entities.DishTypes>()
+            CreateMap<RecipeDishType, Domain.Entities.DishType>()
                 .ForMember(dest =>
                     dest.Id, opt => opt.MapFrom(src => src)
                 );
@@ -48,7 +48,7 @@ namespace MyRecipeBook.Application.Services.AutoMapper
             CreateMap<RequestInstructionJson, Domain.Entities.Instruction>()
                 .ForMember(dest => dest.RecipeId, opt => opt.Ignore());
 
-            CreateMap<RecipeDishType, Domain.Entities.RecipesDishTypes>()
+            CreateMap<RecipeDishType, Domain.Entities.RecipeDishType>()
                 .ForMember(dest => dest.DishTypeId, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.RecipeId, opt => opt.Ignore())
                 .ForMember(dest => dest.Recipe, opt => opt.Ignore())
