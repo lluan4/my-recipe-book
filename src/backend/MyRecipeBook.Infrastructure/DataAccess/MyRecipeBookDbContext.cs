@@ -13,21 +13,21 @@ namespace MyRecipeBook.Infrastructure.DataAccess
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<CookingTime> CookingTime { get; set; }
         public DbSet<Difficulty> Difficulty { get; set; }
-        public DbSet<DishTypes> DishTypes { get; set; }
-        public DbSet<RecipesDishTypes> RecipesDishTypes { get; set; }
+        public DbSet<DishType> DishTypes { get; set; }
+        public DbSet<RecipeDishType> RecipesDishTypes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<RecipesDishTypes>()
+            modelBuilder.Entity<RecipeDishType>()
                 .HasKey(rdt => new { rdt.RecipeId, rdt.DishTypeId });
 
-            modelBuilder.Entity<RecipesDishTypes>()
+            modelBuilder.Entity<RecipeDishType>()
                 .HasOne(rdt => rdt.Recipe)
                 .WithMany(r => r.RecipeDishTypes)
                 .HasForeignKey(rdt => rdt.RecipeId);
 
-            modelBuilder.Entity<RecipesDishTypes>()
+            modelBuilder.Entity<RecipeDishType>()
                 .HasOne(rdt => rdt.DishType)
                 .WithMany()
                 .HasForeignKey(rdt => rdt.DishTypeId);

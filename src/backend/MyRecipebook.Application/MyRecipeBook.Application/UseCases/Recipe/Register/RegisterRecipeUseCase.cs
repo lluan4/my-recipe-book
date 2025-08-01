@@ -57,7 +57,7 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Register
 
             recipe.Instructions = _mapper.Map<IList<Domain.Entities.Instruction>>(instructions);
 
-            recipe.RecipeDishTypes = _mapper.Map<IList<Domain.Entities.RecipesDishTypes>>(request.DishTypes);
+            recipe.RecipeDishTypes = _mapper.Map<IList<Domain.Entities.RecipeDishType>>(request.DishTypes);
 
             await _repository.Add(recipe);
 

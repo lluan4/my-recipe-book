@@ -2,8 +2,8 @@
 {
     public interface IRecipesDishTypeWriteOnlyRepository
     {
-        Task Add(Entities.RecipesDishTypes entity);
-        Task AddRange(IList<Entities.RecipesDishTypes> entities);
+        Task Add(Entities.RecipeDishType entity);
+        Task AddRange(IList<Entities.RecipeDishType> entities);
     }
 
 }

@@ -1,6 +1,9 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace MyRecipeBook.Domain.Entities
 {
+    [Table("users")]
     public class User : EntityBase
     {
         public string Name { get; set; } = string.Empty;
