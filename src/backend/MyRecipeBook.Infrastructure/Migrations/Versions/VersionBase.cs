@@ -46,7 +46,7 @@ namespace MyRecipeBook.Infrastructure.Migrations.Versions
                 MemberExpression m => m,
                 UnaryExpression { Operand: var op } => GetMember(op),
                 _ => throw new ArgumentException(
-                         "Selector deve ser uma property.", nameof(selector))
+                         "Selector deve ser uma property.")
             };
 
             var member = GetMember(selector.Body);
