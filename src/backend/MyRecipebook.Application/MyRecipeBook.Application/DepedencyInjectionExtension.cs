@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Application.Services.AutoMapper;
 using MyRecipeBook.Application.UseCases.Login.DoLogin;
 using MyRecipeBook.Application.UseCases.Recipe.Filter;
+using MyRecipeBook.Application.UseCases.Recipe.GetById;
 using MyRecipeBook.Application.UseCases.Recipe.Register;
 using MyRecipeBook.Application.UseCases.User.ChangePassword;
 using MyRecipeBook.Application.UseCases.User.Profile;
@@ -18,11 +19,26 @@ namespace MyRecipeBook.Application
 
         public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
-            AddAutoMapper(services, configuration);
+            AddAutoMapper(services);
+            AddIdEnconder(services, configuration);
             AddUseCases(services);
         }
 
-        private static void AddAutoMapper(IServiceCollection services, IConfiguration configuration)
+        private static void AddAutoMapper(IServiceCollection services)
+        {
+
+
+            services.AddScoped(options => new AutoMapper.MapperConfiguration(autoMapperOptions =>
+            {
+                var sqids = options.GetService<SqidsEncoder<long>>()!;
+
+                autoMapperOptions.AddProfile(new AutoMapping(sqids));
+            }).CreateMapper());
+
+
+        }
+
+        private static void AddIdEnconder(IServiceCollection services, IConfiguration configuration)
         {
             var sqids = new SqidsEncoder<long>(new()
             {
@@ -30,14 +46,7 @@ namespace MyRecipeBook.Application
                 Alphabet = configuration.GetValue<string>("Settings:IdCryptographyAlphabet")!,
             });
 
-            var autoMapper = new AutoMapper.MapperConfiguration(options =>
-            {
-                options.AddProfile(new AutoMapping(sqids));
-            });
-
-
-
-            services.AddScoped(options => autoMapper.CreateMapper());
+            services.AddSingleton(sqids);
         }
 
         private static void AddUseCases(IServiceCollection services)
@@ -49,6 +58,7 @@ namespace MyRecipeBook.Application
             services.AddScoped<IChangePasswordUseCase, ChangePasswordUseCase>();
             services.AddScoped<IRegisterRecipeUseCase, RegisterRecipeUseCase>();
             services.AddScoped<IFilterRecipeUseCase, FilterRecipeUseCase>();
+            services.AddScoped<IGetRecipeByIdUseCase, GetRecipeByIdUseCase>();
         }
 
 

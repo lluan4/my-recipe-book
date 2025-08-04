@@ -26,16 +26,18 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SupportNonNullableReferenceTypes();
     c.UseAllOfToExtendReferenceSchemas();
+
+    c.OperationFilter<IdsFilter>();
+
     c.AddSecurityDefinition(_bearer, new OpenApiSecurityScheme()
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = _bearer,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme." +
-        "Enter 'Bearer' [space] and then your token in the text input below." +
-        "Example: 'Bearer 12345abcdef'",
+        Description = "Enter your JWT token in the text input below." +
+        "Example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
 
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -48,7 +50,7 @@ builder.Services.AddSwaggerGen(c =>
                                   Type = ReferenceType.SecurityScheme,
                                   Id = _bearer
                               },
-                              Scheme = "oauth2",
+                              Scheme = "bearer",
                               Name = _bearer,
                               In = ParameterLocation.Header
                           },
@@ -70,6 +72,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddDocumentTransformer<ScalarIdsDocumentTransformer>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

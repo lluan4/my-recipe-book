@@ -31,5 +31,9 @@
         {
             return string.Format(ResourceMessagesException.FIELD_TWO_OR_MORE_SAME_ORDER, fieldName);
         }
+        public static string FieldNotFound(string fieldName)
+        {
+            return string.Format(ResourceMessagesException.FIELD_NOT_FOUND, fieldName);
+        }
     }
 }

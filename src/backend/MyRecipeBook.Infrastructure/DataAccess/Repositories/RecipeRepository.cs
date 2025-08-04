@@ -16,11 +16,11 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 
         public async Task<IList<Recipe>> Filter(User user, FilterRecipesDto filters)
         {
-           var query = _dbContext
-                .Recipes
-                .AsNoTracking()
-                .Include(recipe => recipe.Ingredients)
-                .Where(recipe => recipe.Active && recipe.UserId == user.Id);
+            var query = _dbContext
+                 .Recipes
+                 .AsNoTracking()
+                 .Include(recipe => recipe.Ingredients)
+                 .Where(recipe => recipe.Active && recipe.UserId == user.Id);
 
             if (filters.Difficulties.Any())
             {
@@ -39,11 +39,26 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 
             if (filters.RecipeTitle_Ingredient.NotEmpty())
             {
-                query = query.Where(recipe => recipe.Title.Contains(filters.RecipeTitle_Ingredient) 
+                query = query.Where(recipe => recipe.Title.Contains(filters.RecipeTitle_Ingredient)
                 || recipe.Ingredients.Any(ingredient => ingredient.Item.Contains(filters.RecipeTitle_Ingredient)));
             }
 
             return await query.ToListAsync();
+        }
+
+        public async Task<Recipe?> GetById(User user, long recipeId)
+        {
+            return await _dbContext.Recipes
+                .AsNoTracking()
+                .Include(r => r.CookingTime)
+                .Include(r => r.Difficulty)
+                .Include(r => r.RecipeDishTypes)
+                    .ThenInclude(rd => rd.DishType)
+                .Include(r => r.Ingredients)
+                .Include(r => r.Instructions)
+                .FirstOrDefaultAsync(r => r.Id == recipeId &&
+                                          r.UserId == user.Id &&
+                                          r.Active);
         }
     }
 }

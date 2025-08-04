@@ -133,6 +133,15 @@ namespace MyRecipeBook.Exceptions {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No &apos;{0}&apos; was found..
+        /// </summary>
+        public static string FIELD_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("FIELD_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value entered in &apos;{0}&apos; is not allowed based on current system rules..
         /// </summary>
         public static string FIELD_NOT_SUPPORTED {

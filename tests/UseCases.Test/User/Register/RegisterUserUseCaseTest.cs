@@ -20,7 +20,7 @@ namespace UseCases.Test.User.Register
             var useCase = CreateUseCase();
 
             var result = await useCase.Execute(request);
-             
+
             result.ShouldNotBeNull();
             result.Tokens.ShouldNotBeNull();
             result.Name.ShouldBe(request.Name);
@@ -37,7 +37,7 @@ namespace UseCases.Test.User.Register
             Func<Task> act = async () => await useCase.Execute(request);
 
             var ex = await Should.ThrowAsync<ErrorOnValidationException>(act);
-            ex.ErrorMessages.ShouldSatisfyAllConditions(
+            ex.GetErrorMessages().ShouldSatisfyAllConditions(
                 list => list.Count.ShouldBe(1),
                 list => list.ShouldContain(ResourceMessagesException.EMAIL_ALREADY_REGISTERED)
             );
@@ -54,7 +54,7 @@ namespace UseCases.Test.User.Register
             Func<Task> act = async () => await useCase.Execute(request);
 
             var ex = await Should.ThrowAsync<ErrorOnValidationException>(act);
-            ex.ErrorMessages.ShouldSatisfyAllConditions(
+            ex.GetErrorMessages().ShouldSatisfyAllConditions(
                 list => list.Count.ShouldBe(1),
                 list => list.ShouldContain(ResourceMessagesException.NAME_EMPTY)
             );

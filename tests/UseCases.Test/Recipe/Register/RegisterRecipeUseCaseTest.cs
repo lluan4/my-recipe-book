@@ -42,8 +42,8 @@ namespace UseCases.Test.Recipe.Register
             var ex = await Should.ThrowAsync<ErrorOnValidationException>(action);
 
             ex.ShouldSatisfyAllConditions(
-                () => ex.ErrorMessages.Count.ShouldBe(1),
-                () => ex.ErrorMessages.ShouldContain(ResourceMessageHelper.FieldEmpty("Title"))
+                () => ex.GetErrorMessages().Count.ShouldBe(1),
+                () => ex.GetErrorMessages().ShouldContain(ResourceMessageHelper.FieldEmpty("Title"))
             );
         }
 
