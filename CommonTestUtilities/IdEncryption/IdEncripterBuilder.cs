@@ -8,7 +8,7 @@ public class IdEncripterBuilder
         return new SqidsEncoder<long>(new()
         {
             MinLength = 3,
-            Alphabet = "LbNCQzTuDfKj1m6q09dEox7XRPiJIhMV4tlBFSAypUH823rwencG5kvagOZYsW"
+            Alphabet = "rOvmjkATPy2xsp8WbouJKBZw9Q1ftVNCYSgDi5GqH4hlacIU7FnEeMdRzX63L0"
         });
     }
 }

@@ -79,8 +79,8 @@ public class ChangePasswordUseCaseTest
 
         var exception = await act.ShouldThrowAsync<ErrorOnValidationException>();
 
-        exception.ErrorMessages.ShouldHaveSingleItem();
-        exception.ErrorMessages.ShouldContain(ResourceMessagesException.PASSWORD_DIFFERENT_CURRENT_PASSWORD);
+        exception.GetErrorMessages().ShouldHaveSingleItem();
+        exception.GetErrorMessages().ShouldContain(ResourceMessagesException.PASSWORD_DIFFERENT_CURRENT_PASSWORD);
 
         var passwordEncripter = PasswordEncripterBuilder.Build();
 

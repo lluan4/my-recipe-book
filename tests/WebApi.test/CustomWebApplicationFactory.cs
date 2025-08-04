@@ -1,10 +1,12 @@
 ﻿using CommonTestUtilities.Entities;
+using CommonTestUtilities.IdEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Domain.Enums;
 using MyRecipeBook.Infrastructure.DataAccess;
+using Sqids;
 
 namespace WebApi.test
 {
@@ -50,6 +52,7 @@ namespace WebApi.test
         public Guid GetUserIdentifier() => _user.UserIdentifier;
 
         public string GetRecipeTitle() => _recipe.Title;
+        public string GetRecipeId() => IdEncripterBuilder.Build().Encode(_recipe.Id);
         public RecipeDifficulty? GetDifficulty() => _recipe.DifficultyId;
         public RecipeCookingTime? GetRecipeCookingTime() => _recipe.CookingTimeId;
         public IList<RecipeDishType>? GetRecipeDishType() => _recipe.RecipeDishTypes.Select(rdt => rdt.DishTypeId).ToList();

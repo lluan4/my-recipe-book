@@ -23,7 +23,7 @@ namespace MyRecipeBook.Application.UseCases.Recipe.GetById
         {
             var loggedUser = await _loggedUSer.User();
 
-            var recipe = await _repository.GetById(loggedUser.Id, request);
+            var recipe = await _repository.GetById(loggedUser, request );
 
             if (recipe is null)
                 throw new NotFoundException(ResourceMessageHelper.FieldNotFound("Recipe"));

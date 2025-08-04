@@ -46,7 +46,7 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Recipe?> GetById(long userId, long recipeId)
+        public async Task<Recipe?> GetById(User user, long recipeId)
         {
             return await _dbContext.Recipes
                 .AsNoTracking()
@@ -57,7 +57,7 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
                 .Include(r => r.Ingredients)
                 .Include(r => r.Instructions)
                 .FirstOrDefaultAsync(r => r.Id == recipeId &&
-                                          r.UserId == userId &&
+                                          r.UserId == user.Id &&
                                           r.Active);
         }
     }
