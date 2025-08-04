@@ -376,7 +376,7 @@ public class Version0000003 : VersionBase
             }
         };
     }
-    private class RecipeDataModel
+    sealed class RecipeDataModel
     {
         public object RecipeData { get; set; } = null!; 
         public object[] Ingredients { get; set; } = [];
