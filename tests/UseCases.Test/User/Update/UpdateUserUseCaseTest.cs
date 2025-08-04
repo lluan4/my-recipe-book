@@ -22,7 +22,7 @@ namespace UseCases.Test.User.Update
             var useCase = CreateUseCase(user);
 
             Func<Task> act = async () => await useCase.Execute(request);
-             
+
             await act.ShouldNotThrowAsync();
 
             user.Name.ShouldBe(request.Name);
@@ -39,10 +39,10 @@ namespace UseCases.Test.User.Update
 
             var useCase = CreateUseCase(user);
 
-            Func<Task> act = async () => { await useCase.Execute(request); };
+            async Task act() { await useCase.Execute(request); }
 
             var ex = await Should.ThrowAsync<ErrorOnValidationException>(act);
-            ex.ErrorMessages.ShouldSatisfyAllConditions(
+            ex.GetErrorMessages().ShouldSatisfyAllConditions(
                 list => list.Count.ShouldBe(1),
                 list => list.ShouldContain(ResourceMessagesException.NAME_EMPTY)
             );
@@ -63,7 +63,7 @@ namespace UseCases.Test.User.Update
             async Task act() { await useCase.Execute(request); }
 
             var ex = await Should.ThrowAsync<ErrorOnValidationException>(act);
-            ex.ErrorMessages.ShouldSatisfyAllConditions(
+            ex.GetErrorMessages().ShouldSatisfyAllConditions(
                 list => list.Count.ShouldBe(1),
                 list => list.ShouldContain(ResourceMessagesException.EMAIL_ALREADY_REGISTERED)
             );

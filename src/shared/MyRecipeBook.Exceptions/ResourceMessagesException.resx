@@ -168,4 +168,7 @@
   <data name="FIELD_TWO_OR_MORE_SAME_ORDER" xml:space="preserve">
     <value>The '{0}' field must contain only unique values.</value>
   </data>
+  <data name="FIELD_NOT_FOUND" xml:space="preserve">
+    <value>No '{0}' was found.</value>
+  </data>
 </root>

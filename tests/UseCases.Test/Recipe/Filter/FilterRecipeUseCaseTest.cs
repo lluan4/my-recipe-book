@@ -47,8 +47,8 @@ namespace UseCases.Test.Recipe.Filter
 
             var ex = await Should.ThrowAsync<ErrorOnValidationException>(act);
             ex.ShouldSatisfyAllConditions(
-                () => ex.ErrorMessages.Count.ShouldBe(1),
-                () => ex.ErrorMessages.ShouldContain(ResourceMessageHelper.FieldNotSupported("CookingTime"))
+                () => ex.GetErrorMessages().Count.ShouldBe(1),
+                () => ex.GetErrorMessages().ShouldContain(ResourceMessageHelper.FieldNotSupported("CookingTime"))
             );
 
         }
