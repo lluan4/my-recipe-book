@@ -1,14 +1,13 @@
 ﻿using CommonTestUtilities.Entities;
 using CommonTestUtilities.LoggedUser;
-using CommonTestUtilities.Mapper;
 using CommonTestUtilities.Repositories;
-using MyRecipeBook.Application.UseCases.Recipe.GetById;
+using MyRecipeBook.Application.UseCases.Recipe.Delete;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
 
-namespace UseCases.Test.Recipe.GetById
+namespace UseCases.Test.Recipe.Delete
 {
-    public class GetRecipeByIdUseCaseTest
+    public class DeleteRecipeUseCaseTest
     {
 
         [Fact]
@@ -20,12 +19,9 @@ namespace UseCases.Test.Recipe.GetById
 
             var useCase = CreateUseCase(user, recipe);
 
-            var result = await useCase.Execute(recipe.Id);
+            async Task act() { await useCase.Execute(recipe.Id); }
 
-            result.ShouldNotBeNull();
-            result.Id.ShouldNotBeNullOrWhiteSpace();
-            result.Title.ShouldBe(recipe.Title);
-
+            await Should.NotThrowAsync(act);
         }
 
         [Fact]
@@ -35,7 +31,7 @@ namespace UseCases.Test.Recipe.GetById
 
             var useCase = CreateUseCase(user);
 
-            async Task act() { await useCase.Execute(request: 1000); }
+            async Task act() { await useCase.Execute(id: 1000); }
 
             var ex = await Should.ThrowAsync<NotFoundException>(act);
 
@@ -48,16 +44,17 @@ namespace UseCases.Test.Recipe.GetById
 
 
 
-        private static IGetRecipeByIdUseCase CreateUseCase(
+        private static IDeleteRecipeUseCase CreateUseCase(
             MyRecipeBook.Domain.Entities.User user,
             MyRecipeBook.Domain.Entities.Recipe? recipe = null
             )
         {
-            var mapper = MapperBuilder.Build();
             var loggedUser = LoggedUserBuilder.Build(user);
-            var repository = new RecipeReadOnlyRepositoryBuilder().GetById(user, recipe).Build();
+            var repositoryRead = new RecipeReadOnlyRepositoryBuilder().GetById(user, recipe).Build();
+            var repositoryWrite = RecipeWriteOnlyRepositoryBuilder.Build();
+            var unitOfWork = UnitOfWorkBuilder.Build();
 
-            return new GetRecipeByIdUseCase(mapper, loggedUser, repository);
+            return new DeleteRecipeUseCase(loggedUser:loggedUser, repositoryRead:repositoryRead, repositoryWrite:repositoryWrite, unitOfWork:unitOfWork);
         }
     }
 }
