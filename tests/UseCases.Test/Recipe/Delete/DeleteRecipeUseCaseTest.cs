@@ -42,9 +42,7 @@ namespace UseCases.Test.Recipe.Delete
 
         }
 
-
-
-        private static IDeleteRecipeUseCase CreateUseCase(
+        private static DeleteRecipeUseCase CreateUseCase(
             MyRecipeBook.Domain.Entities.User user,
             MyRecipeBook.Domain.Entities.Recipe? recipe = null
             )

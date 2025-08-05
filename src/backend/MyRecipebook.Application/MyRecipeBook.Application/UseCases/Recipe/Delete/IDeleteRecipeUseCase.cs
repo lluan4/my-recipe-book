@@ -4,6 +4,6 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Delete
 {
     public interface IDeleteRecipeUseCase
     {
-        Task Execute(long id);
+        Task Execute(long recipeId);
     }
 }

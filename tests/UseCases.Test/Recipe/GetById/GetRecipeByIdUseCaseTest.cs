@@ -48,7 +48,7 @@ namespace UseCases.Test.Recipe.GetById
 
 
 
-        private static IGetRecipeByIdUseCase CreateUseCase(
+        private static GetRecipeByIdUseCase CreateUseCase(
             MyRecipeBook.Domain.Entities.User user,
             MyRecipeBook.Domain.Entities.Recipe? recipe = null
             )
