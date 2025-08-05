@@ -31,7 +31,7 @@ namespace UseCases.Test.Recipe.Delete
 
             var useCase = CreateUseCase(user);
 
-            async Task act() { await useCase.Execute(id: 1000); }
+            async Task act() { await useCase.Execute(recipeId: 1000); }
 
             var ex = await Should.ThrowAsync<NotFoundException>(act);
 

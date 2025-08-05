@@ -6,7 +6,7 @@ using MyRecipeBook.Application.UseCases.Recipe.GetById;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
 
-namespace UseCases.Test.Recipe.GetById
+namespace UseCases.Test.Recipe.GetRecipeById
 {
     public class GetRecipeByIdUseCaseTest
     {
@@ -35,7 +35,7 @@ namespace UseCases.Test.Recipe.GetById
 
             var useCase = CreateUseCase(user);
 
-            async Task act() { await useCase.Execute(request: 1000); }
+            async Task act() { await useCase.Execute(recipeId: 1000); }
 
             var ex = await Should.ThrowAsync<NotFoundException>(act);
 

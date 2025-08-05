@@ -1,6 +1,4 @@
-﻿using MyRecipeBook.Domain.Enums;
-
-namespace MyRecipeBook.Domain.Repositories.CookingTime
+﻿namespace MyRecipeBook.Domain.Repositories.CookingTime
 {
     public interface ICookingTimeReadOnlyRepository
     {
