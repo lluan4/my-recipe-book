@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using MyRecipeBook.Domain.Dtos;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Extension;
@@ -6,7 +7,7 @@ using MyRecipeBook.Domain.Repositories.Recipe;
 
 namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 {
-    public class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeReadOnlyRepository
+    public class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeReadOnlyRepository, IRecipeUpdateOnlyRepository
     {
         private readonly MyRecipeBookDbContext _dbContext;
 
@@ -53,19 +54,35 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Recipe?> GetById(User user, long recipeId)
+        async Task<Recipe?> IRecipeReadOnlyRepository.GetById(User user, long recipeId)
         {
-            return await _dbContext.Recipes
+            return await GetFullRecipe()
                 .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == recipeId &&
+                                          r.UserId == user.Id &&
+                                          r.Active);
+        }
+
+        async Task<Recipe?> IRecipeUpdateOnlyRepository.GetById(User user, long recipeId) 
+        {
+            return await GetFullRecipe()
+                .FirstOrDefaultAsync(r => r.Id == recipeId &&
+                                        r.UserId == user.Id &&
+                                        r.Active);
+        }
+        public void Update(Recipe recipe) => _dbContext.Recipes.Update(recipe);
+
+        private IIncludableQueryable<Recipe, IList<Instruction>> GetFullRecipe()
+        {
+            return _dbContext
+                .Recipes
                 .Include(r => r.CookingTime)
                 .Include(r => r.Difficulty)
                 .Include(r => r.RecipeDishTypes)
                     .ThenInclude(rd => rd.DishType)
                 .Include(r => r.Ingredients)
-                .Include(r => r.Instructions)
-                .FirstOrDefaultAsync(r => r.Id == recipeId &&
-                                          r.UserId == user.Id &&
-                                          r.Active);
+                .Include(r => r.Instructions);
         }
+
     }
 }

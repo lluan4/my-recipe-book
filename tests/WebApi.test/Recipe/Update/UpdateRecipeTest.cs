@@ -1,4 +1,5 @@
 ﻿using CommonTestUtilities.IdEncryption;
+using CommonTestUtilities.Requests;
 using CommonTestUtilities.Tokens;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
@@ -6,19 +7,19 @@ using System.Net;
 using System.Text.Json;
 using WebApi.test.InlineData;
 
-namespace WebApi.test.Recipe.GetById
+namespace WebApi.test.Recipe.Update
 {
-    public class GetRecipeByIdTest : MyRecipeBookClassFixture
+    public class UpdateRecipeTest : MyRecipeBookClassFixture
     {
         private const string METHOD = "recipe";
-        
+
         private readonly Guid _userIdentifer;
         private readonly string _recipeId;
         private readonly string _recipeTitle;
 
         private readonly string _token;
 
-        public GetRecipeByIdTest(CustomWebApplicationFactory factory) : base(factory)
+        public UpdateRecipeTest(CustomWebApplicationFactory factory) : base(factory)
         {
             _userIdentifer = factory.GetUserIdentifier();
             _recipeId = factory.GetRecipeId();
@@ -29,27 +30,23 @@ namespace WebApi.test.Recipe.GetById
         [Fact]
         public async Task Success()
         {
-            var response = await DoGet(method: $"{METHOD}/{_recipeId}", token: _token);
+            var request = RequestRecipeJsonBuilder.Build();
 
-            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            var response = await DoPut(method: $"{METHOD}/{_recipeId}", token: _token, request: request);
 
-            await using var responseBody = await response.Content.ReadAsStreamAsync();
-
-            var responseData = await JsonDocument.ParseAsync(responseBody);
-
-            responseData.RootElement.GetProperty("id").GetString().ShouldBe(_recipeId);
-            responseData.RootElement.GetProperty("title").GetString().ShouldBe(_recipeTitle);
+            response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         }
 
         [Theory]
         [ClassData(typeof(CultureInlineDataTest))]
-        public async Task Error_Recipe_Not_Found(string culture)
+        public async Task Error_Recipe_Title_Empty(string culture)
         {
-            var id = IdEncripterBuilder.Build().Encode(1000);
+            var request = RequestRecipeJsonBuilder.Build();
+            request.Title = string.Empty;
 
-            var response = await DoGet(method: $"{METHOD}/{id}", token: _token, culture: culture);
+            var response = await DoPut(method: $"{METHOD}/{_recipeId}", token: _token, culture: culture, request: request);
 
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 
             await using var responseBody = await response.Content.ReadAsStreamAsync();
 
@@ -57,13 +54,12 @@ namespace WebApi.test.Recipe.GetById
 
             var errors = responseData.RootElement.GetProperty("errors").EnumerateArray();
 
-            var expectedMessage = ResourceMessageHelper.FieldNotFound(fieldName: "Recipe");
+            var expectedMessage = ResourceMessageHelper.FieldEmpty(fieldName: "Title");
 
             errors.ShouldSatisfyAllConditions(
                e => e.ShouldHaveSingleItem(),
                e => e.Single().GetString()!.Equals(expectedMessage)
            );
         }
-
     }
 }

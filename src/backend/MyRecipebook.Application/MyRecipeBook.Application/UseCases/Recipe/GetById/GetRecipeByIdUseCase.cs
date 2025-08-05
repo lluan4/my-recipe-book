@@ -12,18 +12,18 @@ namespace MyRecipeBook.Application.UseCases.Recipe.GetById
         private readonly ILoggedUser _loggedUSer;
         private readonly IRecipeReadOnlyRepository _repository;
 
-        public GetRecipeByIdUseCase(IMapper mapper, ILoggedUser loggedUSer, IRecipeReadOnlyRepository repository)
+        public GetRecipeByIdUseCase(IMapper mapper, ILoggedUser loggedUser, IRecipeReadOnlyRepository repository)
         {
             _mapper = mapper;
-            _loggedUSer = loggedUSer;
+            _loggedUSer = loggedUser;
             _repository = repository;
         }
 
-        public async Task<ResponseRecipeJson> Execute(long request)
+        public async Task<ResponseRecipeJson> Execute(long recipeId)
         {
             var loggedUser = await _loggedUSer.User();
 
-            var recipe = await _repository.GetById(loggedUser, request );
+            var recipe = await _repository.GetById(loggedUser, recipeId);
 
             if (recipe is null)
                 throw new NotFoundException(ResourceMessageHelper.FieldNotFound("Recipe"));
