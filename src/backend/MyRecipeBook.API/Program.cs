@@ -12,11 +12,20 @@ using MyRecipeBook.Infrastructure;
 using MyRecipeBook.Infrastructure.Extensions;
 using MyRecipeBook.Infrastructure.Migrations;
 using Scalar.AspNetCore;
+using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 const string _bearer = "Bearer";
+
+var configuration = builder.Configuration;
+
+var gitHubUrl = configuration.GetValue<string>("Settings:OpenApi:GitHubUrl")!;
+var mitLicenseUrl = configuration.GetValue<string>("Settings:OpenApi:MitLicenseUrl")!;
+var contactName = configuration.GetValue<string>("Settings:OpenApi:ContactName")!;
+var licenseName = configuration.GetValue<string>("Settings:OpenApi:LicenseName")!;
+
 
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new StringConverter()));
@@ -26,6 +35,34 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SupportNonNullableReferenceTypes();
     c.UseAllOfToExtendReferenceSchemas();
+
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "My Recipe Book API",
+        Version = "v1.0.0",
+        Description = "API completa para gerenciamento de receitas culinárias. " +
+                     "Permite criar, editar, listar e excluir receitas, além de gerenciar usuários e autenticação.",
+        Contact = new OpenApiContact
+        {
+            Name = contactName,
+            Url = new Uri(gitHubUrl)
+        },
+        License = new OpenApiLicense
+        {
+            Name = licenseName,
+            Url = new Uri(mitLicenseUrl)
+        },
+    });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+
+    c.EnableAnnotations();
+    c.DocumentFilter<TagOrdererFilter>();
 
     c.OperationFilter<IdsFilter>();
 
@@ -40,6 +77,33 @@ builder.Services.AddSwaggerGen(c =>
         "Example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
 
     });
+
+    c.OrderActionsBy(api =>
+    {
+        var controllerOrder = new Dictionary<string, int>
+        {
+            ["User"] = 1,
+            ["Login"] = 2,
+            ["Dashboard"] = 3,
+            ["Recipes"] = 4
+        };
+
+        var ctrl = api.ActionDescriptor.RouteValues["controller"] ?? "";
+        var grp = controllerOrder.TryGetValue(ctrl, out var g) ? g : 99;
+
+        var method = api.HttpMethod?.ToUpperInvariant() switch
+        {
+            "GET" => 1,
+            "POST" => 2,
+            "PUT" => 3,
+            "DELETE" => 4,
+            _ => 9
+        };
+
+        // 01_01_/user/{id}
+        return $"{grp:D2}_{method:D2}_{api.RelativePath}";
+    });
+
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -92,16 +156,15 @@ if (app.Environment.IsDevelopment())
 
     app.MapScalarApiReference(options =>
     {
-        options.WithTheme(ScalarTheme.BluePlanet);
-
-        options.WithDarkModeToggle(true);           
-        options.WithSidebar(true);                 
-        options.WithModels(false);               
-        
-        options.WithTitle("My Recipe Book")
-               .WithSidebar(true);
-        options.AddPreferredSecuritySchemes(_bearer);
-
+        options.WithTheme(ScalarTheme.BluePlanet)
+            .WithDarkModeToggle(true)
+            .WithSidebar(true)     
+            .WithModels(true)
+            .WithTitle("My Recipe Book")
+            .AddPreferredSecuritySchemes(_bearer)
+         
+            .WithTagSorter(TagSorter.Alpha)
+            .WithOperationSorter(OperationSorter.Method);
     });
 
     app.UseSwagger();      

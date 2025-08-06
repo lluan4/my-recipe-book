@@ -14,7 +14,6 @@ namespace WebApi.test.Recipe.Filter
     public class FilterRecipeTest : MyRecipeBookClassFixture
     {
         private const string METHOD = "recipe/filter";
-        private const string INVALID_TOKEN = "123";
 
         private readonly Guid _userIdentifier;
 

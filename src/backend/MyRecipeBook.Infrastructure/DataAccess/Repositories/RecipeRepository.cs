@@ -24,11 +24,7 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 
         public async Task<IList<Recipe>> Filter(User user, FilterRecipesDto filters)
         {
-            var query = _dbContext
-                 .Recipes
-                 .AsNoTracking()
-                 .Include(recipe => recipe.Ingredients)
-                 .Where(recipe => recipe.Active && recipe.UserId == user.Id);
+            var query = GetBaseRecipe(user: user);
 
             if (filters.Difficulties.Any())
             {
@@ -54,6 +50,14 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IList<Recipe>> GetForDashboard(User user)
+        {
+            return await GetBaseRecipe(user: user)
+                .OrderByDescending(recipe => recipe.CreatedOn)
+                .Take(5)
+                .ToListAsync();
+        }
+
         async Task<Recipe?> IRecipeReadOnlyRepository.GetById(User user, long recipeId)
         {
             return await GetFullRecipe()
@@ -62,7 +66,7 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
                                           r.UserId == user.Id &&
                                           r.Active);
         }
-
+       
         async Task<Recipe?> IRecipeUpdateOnlyRepository.GetById(User user, long recipeId) 
         {
             return await GetFullRecipe()
@@ -70,8 +74,9 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
                                         r.UserId == user.Id &&
                                         r.Active);
         }
+       
         public void Update(Recipe recipe) => _dbContext.Recipes.Update(recipe);
-
+       
         private IIncludableQueryable<Recipe, IList<Instruction>> GetFullRecipe()
         {
             return _dbContext
@@ -82,6 +87,15 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
                     .ThenInclude(rd => rd.DishType)
                 .Include(r => r.Ingredients)
                 .Include(r => r.Instructions);
+        }
+
+        private IQueryable<Recipe> GetBaseRecipe(User user)
+        {
+            return _dbContext
+                .Recipes
+                .AsNoTracking()
+                .Include(recipe => recipe.Ingredients)
+                .Where(recipe => recipe.Active && recipe.UserId == user.Id);   
         }
 
     }
