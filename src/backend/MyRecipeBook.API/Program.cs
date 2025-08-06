@@ -19,8 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 const string _bearer = "Bearer";
 
-const string _gitHubUrl = "https://github.com/lluan4/my-recipe-book";
-const string _mitLicense = "https://opensource.org/licenses/MIT";
+var configuration = builder.Configuration;
+
+var gitHubUrl = configuration.GetValue<string>("Settings:OpenApi:GitHubUrl")!;
+var mitLicenseUrl = configuration.GetValue<string>("Settings:OpenApi:MitLicenseUrl")!;
+var contactName = configuration.GetValue<string>("Settings:OpenApi:ContactName")!;
+var licenseName = configuration.GetValue<string>("Settings:OpenApi:LicenseName")!;
+
 
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new StringConverter()));
@@ -39,13 +44,13 @@ builder.Services.AddSwaggerGen(c =>
                      "Permite criar, editar, listar e excluir receitas, além de gerenciar usuários e autenticação.",
         Contact = new OpenApiContact
         {
-            Name = "Luan Lima",
-            Url = new Uri(_gitHubUrl)
+            Name = contactName,
+            Url = new Uri(gitHubUrl)
         },
         License = new OpenApiLicense
         {
-            Name = "MIT License",
-            Url = new Uri(_mitLicense)
+            Name = licenseName,
+            Url = new Uri(mitLicenseUrl)
         },
     });
 
