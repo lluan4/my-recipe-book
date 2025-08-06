@@ -19,6 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 const string _bearer = "Bearer";
 
+const string _gitHubUrl = "https://github.com/lluan4/my-recipe-book";
+const string _mitLicense = "https://opensource.org/licenses/MIT";
+
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new StringConverter()));
 
@@ -36,16 +39,14 @@ builder.Services.AddSwaggerGen(c =>
                      "Permite criar, editar, listar e excluir receitas, além de gerenciar usuários e autenticação.",
         Contact = new OpenApiContact
         {
-            Name = "My Recipe Book Team",
-            Email = "support@myrecipebook.com",
-            Url = new Uri("https://github.com/yourrepo/myrecipebook")
+            Name = "Luan Lima",
+            Url = new Uri(_gitHubUrl)
         },
         License = new OpenApiLicense
         {
             Name = "MIT License",
-            Url = new Uri("https://opensource.org/licenses/MIT")
+            Url = new Uri(_mitLicense)
         },
-        TermsOfService = new Uri("https://myrecipebook.com/terms")
     });
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
