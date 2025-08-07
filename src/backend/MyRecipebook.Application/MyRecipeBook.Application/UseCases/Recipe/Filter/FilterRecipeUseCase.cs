@@ -27,7 +27,7 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Filter
 
             var loggedUser = await _loggedUser.User();
 
-            var filters = new Domain.Dtos.FilterRecipesDto
+            var filters = new Domain.Dtos.Recipes.FilterRecipesDto
             {
                 RecipeTitle_Ingredient = request.RecipeTitle_Ingredient,
                 CookingTimes = request.CookingTimes.Distinct().Select(c => (Domain.Enums.RecipeCookingTime)c).ToList(),

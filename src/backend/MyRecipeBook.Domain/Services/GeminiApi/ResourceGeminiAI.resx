@@ -117,67 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EMAIL_EMPTY" xml:space="preserve">
-    <value>E-mail não inforrmado.</value>
-  </data>
-  <data name="EMAIL_ALREADY_REGISTERED" xml:space="preserve">
-    <value>E-mail já cadastrado.</value>
-  </data>
-  <data name="PASSWORD_EMPTY" xml:space="preserve">
-    <value>A senha não pode estar vazia.</value>
-  </data>
-  <data name="PASSWORD_MUST_BE_LONGER_THAN_6_CHARACTERS" xml:space="preserve">
-    <value>A senha deve ter pelo menos 6 caracteres.</value>
-  </data>
-  <data name="EMAIL_INVALID" xml:space="preserve">
-    <value>O e-mail não pode estar vazio</value>
-  </data>
-  <data name="NAME_EMPTY" xml:space="preserve">
-    <value>O nome não pode estar vazio.</value>
-  </data>
-  <data name="UNKNOWN_ERROR" xml:space="preserve">
-    <value>Erro desconhecido.</value>
-  </data>
-  <data name="EMAIL_OR_PASSWORD_INVALID" xml:space="preserve">
-    <value>O e-mail ou senha são inválidos</value>
-  </data>
-  <data name="NO_TOKEN" xml:space="preserve">
-    <value>O token está ausente.</value>
-  </data>
-  <data name="USER_WITHOUT_PERMISSION_ACCESS_RESOURCE" xml:space="preserve">
-    <value>Usuário sem permissão.</value>
-  </data>
-  <data name="PASSWORD_DIFFERENT_CURRENT_PASSWORD" xml:space="preserve">
-    <value>As senhas não conferem.</value>
-  </data>
-  <data name="FIELD_EMPTY" xml:space="preserve">
-    <value>Campo: {0} está vazio. </value>
-  </data>
-  <data name="FIELD_NOT_SUPPORTED" xml:space="preserve">
-    <value>O valor inserido em '{0}' não é permitido pelas regras atuais do sistema.</value>
-  </data>
-  <data name="FIELD_MUST_HAVE_MAX_LENGTH" xml:space="preserve">
-    <value>O campo {0} deve ter no máximo {1} caracteres.</value>
-  </data>
-  <data name="FIELD_MUST_HAVE_AT_LEAST_ONE" xml:space="preserve">
-    <value>O campo {0} deve ter pelo menos um elemento.</value>
-  </data>
-  <data name="FIELD_NON_NEGATIVE" xml:space="preserve">
-    <value>O campo {0} não pode ser negativo</value>
-  </data>
-  <data name="FIELD_TWO_OR_MORE_SAME_ORDER" xml:space="preserve">
-    <value>O campo '{0}' deve conter valores únicos.</value>
-  </data>
-  <data name="FIELD_NOT_FOUND" xml:space="preserve">
-    <value>Não foi encontrado nenhum registro de '{0}'.</value>
-  </data>
-  <data name="FIELD_VALUE_OUT_OF_RANGE" xml:space="preserve">
-    <value>Valor de "{0}" deve estar entre {1} e {2}.</value>
-  </data>
-  <data name="FIELD_DUPLICATE_VALUE" xml:space="preserve">
-    <value>O campo "{0}" tem valores duplicado.</value>
-  </data>
-  <data name="FIELD_PATTERN_MISMATCH" xml:space="preserve">
-    <value>Valor de "{0}" não corresponde ao padrão exigido. ({1})</value>
+  <data name="STARTING_GENERATE_RECIPE" xml:space="preserve">
+    <value>You are a chef who knows many delicious recipes. When the user provides a list of ingredients separated by ';', you will respond with only one recipe that is easy to make using the given ingredients.
+
+You will create a recipe with the following structure and order:
+
+[Recipe Name]
+
+[Cooking time, where: 1 = Less than 10 minutes, 2 = Between 10 and 30 minutes, 3 = Between 30 and 60 minutes, 4 = More than 60 minutes]
+
+[Difficulty level, where: 1 = Low, 2 = Medium, 3 = High]
+
+[Dish type, where: 1 = Appetizer, 2 = Main Course, 3 = Dessert, 4 = Soup, 5 = Snack, 6 = Salad, 7 = Drink]
+
+[List of provided ingredients and any added by you, separated by ';']
+
+[IMPORTANT: Step-by-step instructions to prepare the recipe in a single line, in order and separated by '@' ]
+
+Do not add any text beyond what is requested, please.</value>
   </data>
 </root>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using MyRecipeBook.Domain.Dtos;
+using MyRecipeBook.Domain.Dtos.Recipes;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Extension;
 using MyRecipeBook.Domain.Repositories.Recipe;
