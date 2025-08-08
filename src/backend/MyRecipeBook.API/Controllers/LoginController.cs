@@ -7,33 +7,24 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MyRecipeBook.API.Controllers
 {
-    [Tags("Authentication")]
-    public class LoginController : MyRecipeBookBaseController
-    {
-        /// <summary>
-        /// Realiza login do usuário
-        /// </summary>
-        /// <param name="useCase">Use case para fazer login</param>
-        /// <param name="request">Credenciais de login (email e senha)</param>
-        /// <returns>Dados do usuário autenticado e token de acesso</returns>
-        /// <response code="200">Login realizado com sucesso</response>
-        /// <response code="401">Email ou senha inválidos</response>
-        /// <response code="400">Dados de entrada inválidos</response>
-        [HttpPost]
-        [SwaggerOperation(
-            Description = "Autentica um usuário no sistema usando email e senha",
-            OperationId = "LoginUser"
-        )]
-        [ProducesResponseType(typeof(ResponseRegisteredUserJson), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Login(
-            [FromServices] IDoLoginUseCase useCase,
-            [FromBody] RequestLoginJson request
-        )
-        {
-            var response = await useCase.Execute(request);
-            return Ok(response);
-        }
-    }
+	[Tags("Authentication")]
+	public class LoginController:MyRecipeBookBaseController
+	{
+		[HttpPost]
+		[SwaggerOperation(
+			 Description = "Autentica um usuário no sistema usando email e senha",
+			 OperationId = "LoginUser"
+		)]
+		[ProducesResponseType(typeof(ResponseRegisteredUserJson), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> Login(
+			 [FromServices] IDoLoginUseCase useCase,
+			 [FromBody] RequestLoginJson request
+		)
+		{
+			var response = await useCase.Execute(request);
+			return Ok(response);
+		}
+	}
 }

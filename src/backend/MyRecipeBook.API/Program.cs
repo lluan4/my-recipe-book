@@ -33,94 +33,68 @@ builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializ
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SupportNonNullableReferenceTypes();
-    c.UseAllOfToExtendReferenceSchemas();
+	c.SupportNonNullableReferenceTypes();
+	c.UseAllOfToExtendReferenceSchemas();
 
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "My Recipe Book API",
-        Version = "v1.0.0",
-        Description = "API completa para gerenciamento de receitas culinárias. " +
-                     "Permite criar, editar, listar e excluir receitas, além de gerenciar usuários e autenticação.",
-        Contact = new OpenApiContact
-        {
-            Name = contactName,
-            Url = new Uri(gitHubUrl)
-        },
-        License = new OpenApiLicense
-        {
-            Name = licenseName,
-            Url = new Uri(mitLicenseUrl)
-        },
-    });
+	c.SwaggerDoc("v1", new OpenApiInfo
+	{
+		Title = "My Recipe Book API",
+		Version = "v1.0.0",
+		Description = "API completa para gerenciamento de receitas culinárias. " +
+						  "Permite criar, editar, listar e excluir receitas, além de gerenciar usuários e autenticação.",
+		Contact = new OpenApiContact
+		{
+			Name = contactName,
+			Url = new Uri(gitHubUrl)
+		},
+		License = new OpenApiLicense
+		{
+			Name = licenseName,
+			Url = new Uri(mitLicenseUrl)
+		},
+	});
 
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-    {
-        c.IncludeXmlComments(xmlPath);
-    }
+	var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+	var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+	if(File.Exists(xmlPath))
+	{
+		c.IncludeXmlComments(xmlPath);
+	}
 
-    c.EnableAnnotations();
-    c.DocumentFilter<TagOrdererFilter>();
+	c.EnableAnnotations();
+	c.DocumentFilter<TagOrdererFilter>();
 
-    c.OperationFilter<IdsFilter>();
+	c.OperationFilter<IdsFilter>();
 
-    c.AddSecurityDefinition(_bearer, new OpenApiSecurityScheme()
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter your JWT token in the text input below." +
-        "Example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
+	c.AddSecurityDefinition(_bearer, new OpenApiSecurityScheme()
+	{
+		Name = "Authorization",
+		Type = SecuritySchemeType.Http,
+		Scheme = "bearer",
+		BearerFormat = "JWT",
+		In = ParameterLocation.Header,
+		Description = "Enter your JWT token in the text input below." +
+		 "Example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
 
-    });
+	});
 
-    c.OrderActionsBy(api =>
-    {
-        var controllerOrder = new Dictionary<string, int>
-        {
-            ["User"] = 1,
-            ["Login"] = 2,
-            ["Dashboard"] = 3,
-            ["Recipes"] = 4
-        };
-
-        var ctrl = api.ActionDescriptor.RouteValues["controller"] ?? "";
-        var grp = controllerOrder.TryGetValue(ctrl, out var g) ? g : 99;
-
-        var method = api.HttpMethod?.ToUpperInvariant() switch
-        {
-            "GET" => 1,
-            "POST" => 2,
-            "PUT" => 3,
-            "DELETE" => 4,
-            _ => 9
-        };
-
-        // 01_01_/user/{id}
-        return $"{grp:D2}_{method:D2}_{api.RelativePath}";
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                          new OpenApiSecurityScheme
-                          {
-                              Reference = new OpenApiReference
-                              {
-                                  Type = ReferenceType.SecurityScheme,
-                                  Id = _bearer
-                              },
-                              Scheme = "bearer",
-                              Name = _bearer,
-                              In = ParameterLocation.Header
-                          },
-                         new List<string>()
-                    }
-                });
+	c.AddSecurityRequirement(new OpenApiSecurityRequirement
+					 {
+						  {
+								  new OpenApiSecurityScheme
+								  {
+										Reference = new OpenApiReference
+										{
+											 Type = ReferenceType.SecurityScheme,
+											 Id = _bearer
+										},
+										Scheme = "bearer",
+										Name = _bearer,
+										In = ParameterLocation.Header
+								  },
+								 new List<string>()
+						  }
+					 });
 });
 
 builder.Services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
@@ -135,40 +109,40 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddOpenApi(options =>
 {
-    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-    options.AddDocumentTransformer<ScalarIdsDocumentTransformer>();
+	options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+	options.AddDocumentTransformer<ScalarIdsDocumentTransformer>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters { };
-    });
+	 .AddJwtBearer(options =>
+	 {
+		 options.TokenValidationParameters = new TokenValidationParameters { };
+	 });
 
 
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
+if(app.Environment.IsDevelopment())
 {
 
-    app.MapOpenApi();
+	app.MapOpenApi();
 
-    app.MapScalarApiReference(options =>
-    {
-        options.WithTheme(ScalarTheme.BluePlanet)
-            .WithDarkModeToggle(true)
-            .WithSidebar(true)     
-            .WithModels(true)
-            .WithTitle("My Recipe Book")
-            .AddPreferredSecuritySchemes(_bearer)
-         
-            .WithTagSorter(TagSorter.Alpha)
-            .WithOperationSorter(OperationSorter.Method);
-    });
+	app.MapScalarApiReference(options =>
+	{
+		options.WithTheme(ScalarTheme.BluePlanet)
+			  .WithDarkModeToggle(true)
+			  .WithSidebar(true)
+			  .WithModels(true)
+			  .WithTitle("My Recipe Book")
+			  .AddPreferredSecuritySchemes(_bearer)
 
-    app.UseSwagger();      
-    app.UseSwaggerUI();
+			  .WithTagSorter(TagSorter.Alpha)
+			  .WithOperationSorter(OperationSorter.Method);
+	});
+
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseMiddleware<CultureMiddleware>();
@@ -186,16 +160,16 @@ await app.RunAsync();
 
 void MigrateDatabase()
 {
-    if (builder.Configuration.IsUnitTestEnviroment()) return;
+	if(builder.Configuration.IsUnitTestEnviroment()) return;
 
-    var connectionString  = builder.Configuration.ConnectionString();
+	var connectionString = builder.Configuration.ConnectionString();
 
-    var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-    DatabaseMigration.Migrate(connectionString, serviceScope.ServiceProvider);
+	var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+	DatabaseMigration.Migrate(connectionString, serviceScope.ServiceProvider);
 }
 
 
 public partial class Program
 {
-    protected Program() { }
+	protected Program() { }
 }
