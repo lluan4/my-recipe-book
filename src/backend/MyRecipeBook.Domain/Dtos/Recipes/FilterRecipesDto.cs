@@ -1,6 +1,6 @@
 ﻿using MyRecipeBook.Domain.Enums;
 
-namespace MyRecipeBook.Domain.Dtos
+namespace MyRecipeBook.Domain.Dtos.Recipes
 {
     public record FilterRecipesDto
     {

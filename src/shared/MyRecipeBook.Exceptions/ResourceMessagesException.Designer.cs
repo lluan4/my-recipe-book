@@ -97,6 +97,15 @@ namespace MyRecipeBook.Exceptions {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The field &apos;{0}&apos; contains duplicate values..
+        /// </summary>
+        public static string FIELD_DUPLICATE_VALUE {
+            get {
+                return ResourceManager.GetString("FIELD_DUPLICATE_VALUE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field: {0} is empty..
         /// </summary>
         public static string FIELD_EMPTY {
@@ -151,11 +160,29 @@ namespace MyRecipeBook.Exceptions {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The field &apos;{0}&apos; is out of pattern. ({1}).
+        /// </summary>
+        public static string FIELD_PATTERN_MISMATCH {
+            get {
+                return ResourceManager.GetString("FIELD_PATTERN_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; field must contain only unique values..
         /// </summary>
         public static string FIELD_TWO_OR_MORE_SAME_ORDER {
             get {
                 return ResourceManager.GetString("FIELD_TWO_OR_MORE_SAME_ORDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value of &apos;{0}&apos; must be between {1} and {2}..
+        /// </summary>
+        public static string FIELD_VALUE_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("FIELD_VALUE_OUT_OF_RANGE", resourceCulture);
             }
         }
         

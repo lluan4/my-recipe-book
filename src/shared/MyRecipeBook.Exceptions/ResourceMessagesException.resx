@@ -171,4 +171,13 @@
   <data name="FIELD_NOT_FOUND" xml:space="preserve">
     <value>No '{0}' was found.</value>
   </data>
+  <data name="FIELD_VALUE_OUT_OF_RANGE" xml:space="preserve">
+    <value>The value of '{0}' must be between {1} and {2}.</value>
+  </data>
+  <data name="FIELD_DUPLICATE_VALUE" xml:space="preserve">
+    <value>The field '{0}' contains duplicate values.</value>
+  </data>
+  <data name="FIELD_PATTERN_MISMATCH" xml:space="preserve">
+    <value>The field '{0}' is out of pattern. ({1})</value>
+  </data>
 </root>

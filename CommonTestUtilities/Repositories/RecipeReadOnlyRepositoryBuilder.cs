@@ -1,5 +1,5 @@
 ﻿using Moq;
-using MyRecipeBook.Domain.Dtos;
+using MyRecipeBook.Domain.Dtos.Recipes;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Repositories.Recipe;
 

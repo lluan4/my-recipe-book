@@ -3,6 +3,7 @@ using MyRecipeBook.API.Attributes;
 using MyRecipeBook.API.Binders;
 using MyRecipeBook.Application.UseCases.Recipe.Delete;
 using MyRecipeBook.Application.UseCases.Recipe.Filter;
+using MyRecipeBook.Application.UseCases.Recipe.Generate;
 using MyRecipeBook.Application.UseCases.Recipe.GetById;
 using MyRecipeBook.Application.UseCases.Recipe.Register;
 using MyRecipeBook.Application.UseCases.Recipe.Update;
@@ -72,6 +73,34 @@ namespace MyRecipeBook.API.Controllers
                 return Ok(response);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// gera receitas baseado nos critérios fornecidos
+        /// </summary>
+        /// <param name="useCase">Use case para gerar receitas</param>
+        /// <param name="request">Critérios de gerarreceitas </param>
+        /// <returns>Lista de receitas que atendem aos critérios</returns>
+        /// <response code="200">Receitas encontradas</response>
+        /// <response code="204">Nenhuma receita encontrada</response>
+        /// <response code="401">Token de autenticação inválido ou ausente</response>
+        [HttpPost("generate")]
+        [SwaggerOperation(
+            Summary = "Gerar receitas",
+            Description = "Gerar receitas para o  usuário baseado em critérios como dificuldade, tempo de preparo, etc.",
+            OperationId = "GenerateRecipes"
+        )]
+        [ProducesResponseType(typeof(ResponseGeneratedRecipeJson), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Generate(
+            [FromServices] IGeneratedRecipeUseCase useCase,
+            [FromBody] RequestGenerateRecipeJson request
+        )
+        {
+            var response = await useCase.Execute(request);
+
+            return Ok(response);
         }
 
         /// <summary>

@@ -35,5 +35,17 @@
         {
             return string.Format(ResourceMessagesException.FIELD_NOT_FOUND, fieldName);
         }
+        public static string FieldOutOfRange(string fieldName, string firstValue, string secondValue)
+        {
+            return string.Format(ResourceMessagesException.FIELD_VALUE_OUT_OF_RANGE, fieldName, firstValue, secondValue);
+        }
+        public static string FieldDuplicateValue(string fieldName)
+        {
+            return string.Format(ResourceMessagesException.FIELD_DUPLICATE_VALUE, fieldName);
+        }
+        public static string FieldPatternMismatch(string fieldName, string pattern)
+        {
+            return string.Format(ResourceMessagesException.FIELD_PATTERN_MISMATCH, fieldName, pattern);
+        }
     }
 }

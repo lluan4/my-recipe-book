@@ -1,4 +1,4 @@
-﻿using MyRecipeBook.Domain.Dtos;
+﻿using MyRecipeBook.Domain.Dtos.Recipes;
 
 namespace MyRecipeBook.Domain.Repositories.Recipe
 {

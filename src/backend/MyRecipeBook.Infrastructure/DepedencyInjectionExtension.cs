@@ -1,4 +1,5 @@
 ﻿using FluentMigrator.Runner;
+using GenerativeAI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using MyRecipeBook.Domain.Repositories.RecipesDishType;
 using MyRecipeBook.Domain.Repositories.User;
 using MyRecipeBook.Domain.Security.Cryptography;
 using MyRecipeBook.Domain.Security.Tokens;
+using MyRecipeBook.Domain.Services.GeminiApi;
 using MyRecipeBook.Domain.Services.LoggedUser;
 using MyRecipeBook.Infrastructure.DataAccess;
 using MyRecipeBook.Infrastructure.DataAccess.Repositories;
@@ -18,6 +20,7 @@ using MyRecipeBook.Infrastructure.Extensions;
 using MyRecipeBook.Infrastructure.Security.Cryptography;
 using MyRecipeBook.Infrastructure.Security.Tokens.Access.Generator;
 using MyRecipeBook.Infrastructure.Security.Tokens.Access.Validator;
+using MyRecipeBook.Infrastructure.Services.GeminiApi;
 using MyRecipeBook.Infrastructure.Services.LoggedUser;
 using System.Reflection;
 
@@ -31,6 +34,7 @@ namespace MyRecipeBook.Infrastructure
             AddLoggedUser(services);
             AddTokens(services, configuration);
             AddPasswordEncripter(services, configuration);
+            AddGeminiAI(services, configuration);
 
             if (configuration.IsUnitTestEnviroment()) return;
 
@@ -100,5 +104,13 @@ namespace MyRecipeBook.Infrastructure
             services.AddScoped<IPasswordEncripter>(option => new Sha512Encripter(additionalKey!));
         }
 
+        private static void AddGeminiAI(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped<IGenerateRecipeAI, GeminiService>();
+
+            var geminiApiKey = configuration.GetValue<string>("Settings:GeminiAI:ApiKey")!;
+
+            services.AddScoped<IGenerativeAI>(option => new GoogleAi(geminiApiKey));
+        }
     }
 }
