@@ -31,15 +31,15 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Generate
 
         private static void GetRule(string value, ValidationContext<IEnumerable<string>> context)
         {
-            if(string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
                 context.AddFailure("Ingredient", ResourceMessageHelper.FieldEmpty(fieldName: "Ingredients"));
                 return;
             }
 
-            if(value.Count(c => c == ' ') > 3 || value.Count(c => c == '/') > 1)
+            if (value.Count(c => c == ' ') > 3 || value.Count(c => c == '/') > 1)
             {
-                context.AddFailure("Ingredient", ResourceMessageHelper.FieldPatternMismatch(fieldName: "Ingredients", pattern: "value1 value2 or value1/value2"));
+                context.AddFailure("Ingredient", ResourceMessageHelper.FieldPatternMismatch(fieldName: "Ingredients", pattern: "value1, value2 or 3/4 value2"));
                 return;
             }
 

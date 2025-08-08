@@ -71,7 +71,7 @@ namespace MyRecipeBook.Domain.Services.GeminiApi {
         ///
         ///[Difficulty level, where: 1 = Low, 2 = Medium, 3 = High]
         ///
-        ///[Dish type, where: 1 = Appetizer, 2 [rest of string was truncated]&quot;;.
+        ///[Dish type, where: 1 = Ap [rest of string was truncated]&quot;;.
         /// </summary>
         public static string STARTING_GENERATE_RECIPE {
             get {
