@@ -1,6 +1,5 @@
-﻿using FileTypeChecker.Extensions;
-using FileTypeChecker.Types;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using MyRecipeBook.Application.Extension.MyRecipeBook.Domain.Extension;
 using MyRecipeBook.Domain.Extension;
 using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.Recipe;
@@ -40,13 +39,17 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Image
 			if(recipe is null)
 				throw new NotFoundException(ResourceMessageHelper.FieldNotFound("recipeId"));
 
-			var fileString = file.OpenReadStream();
+			var fileStream = file.OpenReadStream();
 
-			ValidateFile(fileString);
+			(var isValidImage, var imageIdentifier) = fileStream.ValidadeAndGetImageIdentifier();
+
+			if(isValidImage.isFalse())
+				throw new ErrorOnValidationException([ResourceMessagesException.ONLY_IMAGES_ACCEPTED]);
+
 
 			if(string.IsNullOrEmpty(recipe.ImageIdentifier))
 			{
-				recipe.ImageIdentifier = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+				recipe.ImageIdentifier = imageIdentifier;
 
 				_recipeUpdateOnlyRepository.Update(recipe);
 
@@ -54,18 +57,8 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Image
 
 			}
 
-			await _blobStorageService.Upload(loggedUser, fileString, recipe.ImageIdentifier);
+			await _blobStorageService.Upload(loggedUser, fileStream, recipe.ImageIdentifier);
 
-		}
-
-		protected static void ValidateFile(Stream fileString)
-		{
-			var isInvalidImgType = fileString.Is<PortableNetworkGraphic>().isFalse() && fileString.Is<JointPhotographicExpertsGroup>().isFalse();
-
-			if(isInvalidImgType)
-				throw new ErrorOnValidationException([ResourceMessagesException.ONLY_IMAGES_ACCEPTED]);
-
-			fileString.Position = 0;
 		}
 
 	}

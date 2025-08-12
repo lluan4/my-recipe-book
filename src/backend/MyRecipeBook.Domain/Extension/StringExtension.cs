@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MyRecipeBook.Domain.Extension
 {

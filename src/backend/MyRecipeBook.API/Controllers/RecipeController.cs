@@ -47,7 +47,7 @@ namespace MyRecipeBook.API.Controllers
 		[ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status401Unauthorized)]
 		public async Task<IActionResult> Register(
 		  [FromServices] IRegisterRecipeUseCase useCase,
-		  [FromBody] RequestRecipeJson request
+		  [FromForm] RequestRegisterRecipeFormData request
 		)
 		{
 			var response = await useCase.Execute(request);

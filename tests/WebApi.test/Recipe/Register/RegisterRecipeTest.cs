@@ -10,88 +10,88 @@ using WebApi.test.InlineData;
 namespace WebApi.test.Recipe.Register
 {
 
-    public class RegisterRecipeTest : MyRecipeBookClassFixture
-    {
-        private const string METHOD = "recipe";
-        private readonly Guid _userIdentifier;
-        public RegisterRecipeTest(CustomWebApplicationFactory factory) : base(factory)
-        {
-            _userIdentifier = factory.GetUserIdentifier();
-        }
+	public class RegisterRecipeTest:MyRecipeBookClassFixture
+	{
+		private const string METHOD = "recipe";
+		private readonly Guid _userIdentifier;
+		public RegisterRecipeTest(CustomWebApplicationFactory factory) : base(factory)
+		{
+			_userIdentifier = factory.GetUserIdentifier();
+		}
 
-        [Fact]
-        public async Task Success() 
-        {
-           
-                var request = RequestRecipeJsonBuilder.Build();
-                var token = JwtTokensGeneratorBuilder.Build().Generate(_userIdentifier);
+		[Fact]
+		public async Task Success()
+		{
 
-                var response = await DoPost(method: METHOD, request: request, token: token);
+			var request = RequestRecipeJsonBuilder.Build();
+			var token = JwtTokensGeneratorBuilder.Build().Generate(_userIdentifier);
 
-                response.StatusCode.ShouldBe(HttpStatusCode.Created);
+			var response = await DoPostFormData(method: METHOD, request: request, token: token);
 
-                await using var responseBody = await response.Content.ReadAsStreamAsync();
+			response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-                var responseData = await JsonDocument.ParseAsync(responseBody);
+			await using var responseBody = await response.Content.ReadAsStreamAsync();
 
-                var id = responseData.RootElement.GetProperty("id").GetString();
-                var title = responseData.RootElement.GetProperty("title").GetString();
+			var responseData = await JsonDocument.ParseAsync(responseBody);
 
-                id.ShouldNotBeNullOrEmpty();
-                title.ShouldNotBeNullOrEmpty();
+			var id = responseData.RootElement.GetProperty("id").GetString();
+			var title = responseData.RootElement.GetProperty("title").GetString();
 
-        }
+			id.ShouldNotBeNullOrEmpty();
+			title.ShouldNotBeNullOrEmpty();
 
-        [Theory]
-        [ClassData(typeof(CultureInlineDataTest))]
-        public async Task Error_Invalid_Token(string culture)
-        {
-            var request = RequestRecipeJsonBuilder.Build();
-            var token = "teste123";
+		}
 
-            var response = await DoPost(method: METHOD, request: request, token: token, culture: culture);
+		[Theory]
+		[ClassData(typeof(CultureInlineDataTest))]
+		public async Task Error_Invalid_Token(string culture)
+		{
+			var request = RequestRecipeJsonBuilder.Build();
+			var token = "teste123";
 
-            response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
-        }
+			var response = await DoPost(method: METHOD, request: request, token: token, culture: culture);
 
-        [Theory]
-        [ClassData(typeof(CultureInlineDataTest))]
-        public async Task Error_Without_Token(string culture)
-        {
-            var request = RequestRecipeJsonBuilder.Build();
+			response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+		}
 
-            var response = await DoPost(method: METHOD, request: request, culture: culture);
+		[Theory]
+		[ClassData(typeof(CultureInlineDataTest))]
+		public async Task Error_Without_Token(string culture)
+		{
+			var request = RequestRecipeJsonBuilder.Build();
 
-            response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
-        }
+			var response = await DoPost(method: METHOD, request: request, culture: culture);
 
-        [Theory]
-        [ClassData(typeof(CultureInlineDataTest))]
-        public async Task Error_Title_Empty(string culture)
-        {
-            var request = RequestRecipeJsonBuilder.Build();
-            request.Title = string.Empty;
+			response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+		}
 
-            var token = JwtTokensGeneratorBuilder.Build().Generate(_userIdentifier);
+		[Theory]
+		[ClassData(typeof(CultureInlineDataTest))]
+		public async Task Error_Title_Empty(string culture)
+		{
+			var request = RequestRecipeJsonBuilder.Build();
+			request.Title = string.Empty;
 
-            var response = await DoPost(method: METHOD, request: request, token: token, culture: culture);
+			var token = JwtTokensGeneratorBuilder.Build().Generate(_userIdentifier);
 
-            response.StatusCode.ShouldBe(System.Net.HttpStatusCode.BadRequest);
+			var response = await DoPostFormData(method: METHOD, request: request, token: token, culture: culture);
 
-            await using var responseBody = await response.Content.ReadAsStreamAsync();
+			response.StatusCode.ShouldBe(System.Net.HttpStatusCode.BadRequest);
 
-            var responseData = await JsonDocument.ParseAsync(responseBody);
+			await using var responseBody = await response.Content.ReadAsStreamAsync();
 
-            var errors = responseData.RootElement.GetProperty("errors").EnumerateArray();
+			var responseData = await JsonDocument.ParseAsync(responseBody);
 
-            var expectedMessage = ResourceMessageHelper.FieldEmpty("Title");
+			var errors = responseData.RootElement.GetProperty("errors").EnumerateArray();
 
-            errors.ShouldSatisfyAllConditions(
-                e => e.ShouldHaveSingleItem(),
-                e => e.Single().GetString()!.Equals(expectedMessage)
-            );
+			var expectedMessage = ResourceMessageHelper.FieldEmpty("Title");
 
-        }
-        
-    }
+			errors.ShouldSatisfyAllConditions(
+				 e => e.ShouldHaveSingleItem(),
+				 e => e.Single().GetString()!.Equals(expectedMessage)
+			);
+
+		}
+
+	}
 }
