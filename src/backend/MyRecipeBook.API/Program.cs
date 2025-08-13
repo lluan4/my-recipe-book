@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyRecipeBook.API.BackgroundServices;
 using MyRecipeBook.API.Converters;
 using MyRecipeBook.API.Filters;
 using MyRecipeBook.API.Middleware;
@@ -119,8 +120,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		 options.TokenValidationParameters = new TokenValidationParameters { };
 	 });
 
+builder.Services.AddHostedService<DeleteUserService>();
 
 var app = builder.Build();
+
 
 
 if(app.Environment.IsDevelopment())

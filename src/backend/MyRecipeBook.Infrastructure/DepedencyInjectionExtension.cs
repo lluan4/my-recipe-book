@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure.Messaging.ServiceBus;
+using Azure.Storage.Blobs;
 using FluentMigrator.Runner;
 using GenerativeAI;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using MyRecipeBook.Domain.Security.Cryptography;
 using MyRecipeBook.Domain.Security.Tokens;
 using MyRecipeBook.Domain.Services.GeminiApi;
 using MyRecipeBook.Domain.Services.LoggedUser;
+using MyRecipeBook.Domain.Services.ServiceBus;
 using MyRecipeBook.Domain.Services.Storage;
 using MyRecipeBook.Infrastructure.DataAccess;
 using MyRecipeBook.Infrastructure.DataAccess.Repositories;
@@ -24,6 +26,7 @@ using MyRecipeBook.Infrastructure.Security.Tokens.Access.Generator;
 using MyRecipeBook.Infrastructure.Security.Tokens.Access.Validator;
 using MyRecipeBook.Infrastructure.Services.GeminiApi;
 using MyRecipeBook.Infrastructure.Services.LoggedUser;
+using MyRecipeBook.Infrastructure.Services.ServiceBus;
 using MyRecipeBook.Infrastructure.Services.Storage;
 using System.Reflection;
 
@@ -31,6 +34,8 @@ namespace MyRecipeBook.Infrastructure
 {
 	public static class DepedencyInjectionExtension
 	{
+
+		private const string QUEUE_NAME = "user";
 		public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
 		{
 			AddRepositories(services);
@@ -39,6 +44,7 @@ namespace MyRecipeBook.Infrastructure
 			AddPasswordEncripter(services, configuration);
 			AddGeminiAI(services, configuration);
 			AddAzureStorage(services, configuration);
+			AddQueue(services, configuration);
 
 			if(configuration.IsUnitTestEnviroment()) return;
 
@@ -64,6 +70,7 @@ namespace MyRecipeBook.Infrastructure
 			services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
 			services.AddScoped<IUserReadOnlyRepository, UserRepository>();
 			services.AddScoped<IUserUpdateOnlyRepository, UserRepository>();
+			services.AddScoped<IUserDeleteOnlyRepository, UserRepository>();
 
 			services.AddScoped<ICookingTimeReadOnlyRepository, CookingTimeRepository>();
 			services.AddScoped<IDifficultyReadOnlyRepository, DifficultyRepository>();
@@ -75,6 +82,27 @@ namespace MyRecipeBook.Infrastructure
 
 			services.AddScoped<IRecipesDishTypeWriteOnlyRepository, RecipesDishTypeRepository>();
 
+		}
+
+		private static void AddQueue(IServiceCollection services, IConfiguration configuration)
+		{
+			var connectionString = configuration.GetValue<string>("Settings:ServiceBus:DeleteUserAccount");
+
+			var client = new ServiceBusClient(connectionString, new ServiceBusClientOptions
+			{
+				TransportType = ServiceBusTransportType.AmqpWebSockets
+			});
+
+			var deleteQueue = new DeleteUserQueue(client.CreateSender(QUEUE_NAME));
+
+			var deleteUserProcessor = new DeleteUserProcessor(client.CreateProcessor(QUEUE_NAME, new ServiceBusProcessorOptions
+			{
+				MaxConcurrentCalls = 1
+			}));
+
+			services.AddSingleton(deleteUserProcessor.GetProcessor());
+
+			services.AddScoped<IDeleteUserQueue>(o => deleteQueue);
 		}
 
 		private static void AddFluentMigrator(IServiceCollection services, IConfiguration configuration)
