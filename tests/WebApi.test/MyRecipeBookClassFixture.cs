@@ -32,12 +32,17 @@ namespace WebApi.test
 
 			var requestProperties = request.GetType().GetProperties().ToList();
 
-			foreach (var property in requestProperties)
+			foreach(var property in requestProperties)
 			{
 				var propertyValue = property.GetValue(request);
-				
-				if(propertyValue is null)
+
+				if(string.IsNullOrWhiteSpace(propertyValue?.ToString())) continue;
+
+				if(propertyValue is System.Collections.IList list)
+				{
+					AddListToMultipartContent(multipartContent, property.Name, list);
 					continue;
+				}
 
 				multipartContent.Add(new StringContent(propertyValue.ToString()!), property.Name);
 			}
@@ -84,10 +89,51 @@ namespace WebApi.test
 			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 		}
 
-		private void AddListToMultipartContent()
+		private static void AddListToMultipartContent(
+			MultipartFormDataContent multipartContent,
+			string propertyName,
+			System.Collections.IList list
+			)
 		{
+			var itemType = list.GetType().GetGenericArguments().Single();
 
+			if(itemType.IsClass && itemType != typeof(string))
+			{
+				AddClassListToMultipartContent(multipartContent, propertyName, list);
+				return;
+			}
+
+			foreach(var item in list)
+			{
+				multipartContent.Add(
+					new StringContent(item.ToString()!),
+					propertyName
+				);
+			}
 		}
 
+		private static void AddClassListToMultipartContent(
+			MultipartFormDataContent multipartContent,
+			string propertyName,
+			System.Collections.IList list
+			)
+		{
+			var index = 0;
+
+			foreach(var item in list)
+			{
+				var classPropertiesInfo = item.GetType().GetProperties().ToList();
+
+				foreach(var property in classPropertiesInfo)
+				{
+					var value = property.GetValue(item, null);
+					
+					multipartContent.Add(new StringContent(value!.ToString()!), $"{propertyName}[{index}][{property.Name}]");
+
+				}
+
+				index++;
+			}
+		}
 	}
 }
