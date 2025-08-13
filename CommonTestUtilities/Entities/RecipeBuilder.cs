@@ -32,7 +32,8 @@ namespace CommonTestUtilities.Entities
             return new Faker<Recipe>()
                 .RuleFor(r => r.Id, () => 1)
                 .RuleFor(r => r.Title, (f) => f.Lorem.Word())
-                .RuleFor(r => r.CookingTimeId, (f) => f.PickRandom<RecipeCookingTime>())
+					 .RuleFor(r => r.ImageIdentifier, _ => $"{Guid.NewGuid()}.png")
+					 .RuleFor(r => r.CookingTimeId, (f) => f.PickRandom<RecipeCookingTime>())
                 .RuleFor(r => r.DifficultyId, (f) => f.PickRandom<RecipeDifficulty>())
                 .RuleFor(r => r.Ingredients, (f) => f.Make(1, () => new Ingredient
                 {

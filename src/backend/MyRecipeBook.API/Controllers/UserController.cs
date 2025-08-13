@@ -15,14 +15,7 @@ namespace MyRecipeBook.API.Controllers
     [Tags("Users")]
     public class UserController : MyRecipeBookBaseController
     {
-        /// <summary>
-        /// Registra um novo usuário no sistema
-        /// </summary>
-        /// <param name="useCase">Use case para registro de usuário</param>
-        /// <param name="request">Dados do usuário a ser registrado</param>
-        /// <returns>Dados do usuário criado e token de acesso</returns>
-        /// <response code="201">Usuário criado com sucesso</response>
-        /// <response code="400">Dados inválidos ou email já cadastrado</response>
+
         [HttpPost]
         [SwaggerOperation(
             Summary = "Criar usuário",
@@ -39,13 +32,7 @@ namespace MyRecipeBook.API.Controllers
             return Created(string.Empty, result);
         }
 
-        /// <summary>
-        /// Obtém o perfil do usuário autenticado
-        /// </summary>
-        /// <param name="useCase">Use case para obter perfil</param>
-        /// <returns>Dados do perfil do usuário</returns>
-        /// <response code="200">Perfil do usuário obtido com sucesso</response>
-        /// <response code="401">Token de autenticação inválido ou ausente</response>
+
         [HttpGet]
         [SwaggerOperation(
             Summary = "Obter perfil do usuário",
@@ -61,15 +48,7 @@ namespace MyRecipeBook.API.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Atualiza os dados do usuário autenticado
-        /// </summary>
-        /// <param name="useCase">Use case para atualizar usuário</param>
-        /// <param name="request">Dados atualizados do usuário</param>
-        /// <returns>Confirmação da atualização</returns>
-        /// <response code="204">Usuário atualizado com sucesso</response>
-        /// <response code="400">Dados inválidos fornecidos</response>
-        /// <response code="401">Token de autenticação inválido ou ausente</response>
+
         [HttpPut]
         [SwaggerOperation(
             Summary = "Atualizar perfil do usuário",
@@ -88,15 +67,7 @@ namespace MyRecipeBook.API.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Altera a senha do usuário autenticado
-        /// </summary>
-        /// <param name="useCase">Use case para alterar senha</param>
-        /// <param name="request">Dados para alteração de senha (senha atual e nova senha)</param>
-        /// <returns>Confirmação da alteração</returns>
-        /// <response code="204">Senha alterada com sucesso</response>
-        /// <response code="400">Dados inválidos ou senha atual incorreta</response>
-        /// <response code="401">Token de autenticação inválido ou ausente</response>
+
         [HttpPut("change-password")]
         [SwaggerOperation(
             Summary = "Alterar senha",

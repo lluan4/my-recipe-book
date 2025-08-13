@@ -4,66 +4,68 @@ using CommonTestUtilities.Mapper;
 using CommonTestUtilities.Repositories;
 using CommonTestUtilities.Requests;
 using MyRecipeBook.Application.UseCases.Recipe.Filter;
+using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
 
 namespace UseCases.Test.Recipe.Filter
 {
-    public class FilterRecipeUseCaseTest
-    {
-        [Fact]
-        public async Task Success()
-        {
-            (var user, _) = UserBuilder.Build();
+	public class FilterRecipeUseCaseTest
+	{
+		[Fact]
+		public async Task Success()
+		{
+			(var user, _) = UserBuilder.Build();
 
-            var request = RequestFilterRecipeJsonBuilder.Build();
+			var request = RequestFilterRecipeJsonBuilder.Build();
 
-            var recipes = RecipeBuilder.Collection(user);
+			var recipes = RecipeBuilder.Collection(user);
 
-            var useCase = CreateUseCase(user, recipes);
+			var useCase = CreateUseCase(user, recipes);
 
-            var result = await useCase.Execute(request);
+			var result = await useCase.Execute(request);
 
-            result.ShouldNotBeNull();
-            result.Recipes.ShouldNotBeNull();
-            result.Recipes.ShouldNotBeEmpty();
-            result.Recipes.Count.ShouldBe(recipes.Count);
+			result.ShouldNotBeNull();
+			result.Recipes.ShouldNotBeNull();
+			result.Recipes.ShouldNotBeEmpty();
+			result.Recipes.Count.ShouldBe(recipes.Count);
 
-        }
+		}
 
-        [Fact]
-        public async Task Error_CookingTime_Invalid()
-        {
-            (var user, _) = UserBuilder.Build();
+		[Fact]
+		public async Task Error_CookingTime_Invalid()
+		{
+			(var user, _) = UserBuilder.Build();
 
-            var recipes = RecipeBuilder.Collection(user);
+			var recipes = RecipeBuilder.Collection(user);
 
-            var request = RequestFilterRecipeJsonBuilder.Build();
-            request.CookingTimes.Add((MyRecipeBook.Communication.Enums.RecipeCookingTime)1000);
+			var request = RequestFilterRecipeJsonBuilder.Build();
+			request.CookingTimes.Add((MyRecipeBook.Communication.Enums.RecipeCookingTime) 1000);
 
-            var useCase = CreateUseCase(user, recipes);
+			var useCase = CreateUseCase(user, recipes);
 
-            Func<Task> act = async () => { await useCase.Execute(request); };
+			Func<Task> act = async () => { await useCase.Execute(request); };
 
-            var ex = await Should.ThrowAsync<ErrorOnValidationException>(act);
-            ex.ShouldSatisfyAllConditions(
-                () => ex.GetErrorMessages().Count.ShouldBe(1),
-                () => ex.GetErrorMessages().ShouldContain(ResourceMessageHelper.FieldNotSupported("CookingTime"))
-            );
+			var ex = await Should.ThrowAsync<ErrorOnValidationException>(act);
+			ex.ShouldSatisfyAllConditions(
+				 () => ex.GetErrorMessages().Count.ShouldBe(1),
+				 () => ex.GetErrorMessages().ShouldContain(ResourceMessageHelper.FieldNotSupported("CookingTime"))
+			);
 
-        }
+		}
 
 
-        private static FilterRecipeUseCase CreateUseCase(
-            MyRecipeBook.Domain.Entities.User user,
-            IList<MyRecipeBook.Domain.Entities.Recipe> recipes
-            )
-        {
-            var mapper = MapperBuilder.Build();
-            var loggedUser = LoggedUserBuilder.Build(user);
-            var repository = new RecipeReadOnlyRepositoryBuilder().Filter(user, recipes).Build();
+		private static FilterRecipeUseCase CreateUseCase(
+			 MyRecipeBook.Domain.Entities.User user,
+			 IList<MyRecipeBook.Domain.Entities.Recipe> recipes
+			 )
+		{
+			var mapper = MapperBuilder.Build();
+			var loggedUser = LoggedUserBuilder.Build(user);
+			var repository = new RecipeReadOnlyRepositoryBuilder().Filter(user, recipes).Build();
+			var blobStorage = new CommonTestUtilities.BlobStorage.BlobStorageServiceBuilder().GetFileUrl(user, recipes).Build();
 
-            return new FilterRecipeUseCase(mapper, loggedUser, repository);
-        }
-    }
+			return new FilterRecipeUseCase(mapper, loggedUser, repository, blobStorage);
+		}
+	}
 }

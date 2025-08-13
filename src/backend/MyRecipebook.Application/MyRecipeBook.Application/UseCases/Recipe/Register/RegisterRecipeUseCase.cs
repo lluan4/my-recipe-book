@@ -1,83 +1,105 @@
 ﻿using AutoMapper;
+using MyRecipeBook.Application.Extension.MyRecipeBook.Domain.Extension;
 using MyRecipeBook.Communication.Request;
 using MyRecipeBook.Communication.Response;
+using MyRecipeBook.Domain.Extension;
 using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.CookingTime;
 using MyRecipeBook.Domain.Repositories.Difficulty;
 using MyRecipeBook.Domain.Repositories.DishType;
 using MyRecipeBook.Domain.Repositories.Recipe;
 using MyRecipeBook.Domain.Services.LoggedUser;
+using MyRecipeBook.Domain.Services.Storage;
+using MyRecipeBook.Exceptions;
 using MyRecipeBook.Exceptions.ExceptionsBase;
+using System.IO;
 
 namespace MyRecipeBook.Application.UseCases.Recipe.Register
 {
-    public class RegisterRecipeUseCase : IRegisterRecipeUseCase
-    {
-        private readonly IRecipeWriteOnlyRepository _repository;
+	public class RegisterRecipeUseCase:IRegisterRecipeUseCase
+	{
+		private readonly IRecipeWriteOnlyRepository _repository;
 
-        private readonly ICookingTimeReadOnlyRepository _repositoryCookingTime;
-        private readonly IDifficultyReadOnlyRepository _repositoryDifficultyTime;
-        private readonly IDishTypeReadOnlyRepository _repositoryDishType;
+		private readonly ICookingTimeReadOnlyRepository _repositoryCookingTime;
+		private readonly IDifficultyReadOnlyRepository _repositoryDifficultyTime;
+		private readonly IDishTypeReadOnlyRepository _repositoryDishType;
 
-        private readonly ILoggedUser _loggedUser;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+		private readonly ILoggedUser _loggedUser;
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IMapper _mapper;
+		private readonly IBlobStorageService _blobStorageService;
 
-        public RegisterRecipeUseCase(
-            IRecipeWriteOnlyRepository repository,
-            ICookingTimeReadOnlyRepository repositoryCookingTime,
-            IDifficultyReadOnlyRepository repositoryDifficultyTime,
-            IDishTypeReadOnlyRepository repositoryDishType,
-            ILoggedUser loggedUser,
-            IUnitOfWork unitOfWork,
-            IMapper mapper
-            )
-        {
-            _repository = repository;
-            _repositoryCookingTime = repositoryCookingTime;
-            _repositoryDifficultyTime = repositoryDifficultyTime;
-            _repositoryDishType = repositoryDishType;
-            _loggedUser = loggedUser;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+		public RegisterRecipeUseCase(
+			 IRecipeWriteOnlyRepository repository,
+			 ICookingTimeReadOnlyRepository repositoryCookingTime,
+			 IDifficultyReadOnlyRepository repositoryDifficultyTime,
+			 IDishTypeReadOnlyRepository repositoryDishType,
+			 ILoggedUser loggedUser,
+			 IUnitOfWork unitOfWork,
+			 IMapper mapper,
+			 IBlobStorageService blobStorageService
+			 )
+		{
+			_repository = repository;
+			_repositoryCookingTime = repositoryCookingTime;
+			_repositoryDifficultyTime = repositoryDifficultyTime;
+			_repositoryDishType = repositoryDishType;
+			_loggedUser = loggedUser;
+			_unitOfWork = unitOfWork;
+			_mapper = mapper;
+			_blobStorageService = blobStorageService;
+		}
 
-        public async Task<ResponseRegisteredRecipeJson> Execute(RequestRecipeJson request)
-        {
-            await ValidateAsync(request);
+		public async Task<ResponseRegisteredRecipeJson> Execute(RequestRegisterRecipeFormData request)
+		{
+			await ValidateAsync(request);
 
-            var loggedUser = await _loggedUser.User();
+			var loggedUser = await _loggedUser.User();
 
-            var recipe = _mapper.Map<Domain.Entities.Recipe>(request);
-            recipe.UserId = loggedUser.Id;
+			var recipe = _mapper.Map<Domain.Entities.Recipe>(request);
+			recipe.UserId = loggedUser.Id;
 
-            var instructions = request.Instructions.OrderBy(i => i.Step).ToList();
-            for (var i = 0; i < instructions.Count; i++)
-                instructions[i].Step = i + 1;
+			var instructions = request.Instructions.OrderBy(i => i.Step).ToList();
+			for(var i = 0;i < instructions.Count;i++)
+				instructions[i].Step = i + 1;
 
-            recipe.Instructions = _mapper.Map<IList<Domain.Entities.Instruction>>(instructions);
+			recipe.Instructions = _mapper.Map<IList<Domain.Entities.Instruction>>(instructions);
 
-            recipe.RecipeDishTypes = _mapper.Map<IList<Domain.Entities.RecipeDishType>>(request.DishTypes);
+			recipe.RecipeDishTypes = _mapper.Map<IList<Domain.Entities.RecipeDishType>>(request.DishTypes);
 
-            await _repository.Add(recipe);
+			if(request.Image is not null)
+			{
+				var fileStream = request.Image.OpenReadStream();
 
-            await _unitOfWork.Commit();
+				(var isValidImage, var imageIdentifier) = fileStream.ValidadeAndGetImageIdentifier();
 
-            return _mapper.Map<ResponseRegisteredRecipeJson>(recipe);
-        }
+				if(isValidImage.isFalse())
+					throw new ErrorOnValidationException([ResourceMessagesException.ONLY_IMAGES_ACCEPTED]);
 
-        private async Task ValidateAsync(RequestRecipeJson request)
-        {
-            var validator = new RecipeValidator(
-                _repositoryCookingTime,
-                _repositoryDifficultyTime,
-                _repositoryDishType);
+				recipe.ImageIdentifier = imageIdentifier;
 
-            var result = await validator.ValidateAsync(request);
+				await _blobStorageService.Upload(loggedUser, fileStream, recipe.ImageIdentifier);
+			}
 
-            if (!result.IsValid)
-                throw new ErrorOnValidationException(
-                    result.Errors.Select(e => e.ErrorMessage).Distinct().ToList());
-        }
-    }
+			await _repository.Add(recipe);
+
+			await _unitOfWork.Commit();
+
+			return _mapper.Map<ResponseRegisteredRecipeJson>(recipe);
+		}
+
+		private async Task ValidateAsync(RequestRecipeJson request)
+		{
+			var validator = new RecipeValidator(
+				 _repositoryCookingTime,
+				 _repositoryDifficultyTime,
+				 _repositoryDishType);
+
+			var result = await validator.ValidateAsync(request);
+
+			if(!result.IsValid)
+				throw new ErrorOnValidationException(
+					 result.Errors.Select(e => e.ErrorMessage).Distinct().ToList());
+		}
+	}
 }
