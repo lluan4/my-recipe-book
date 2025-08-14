@@ -11,6 +11,7 @@ using System.Security.Claims;
 
 namespace MyRecipeBook.API.Controllers
 {
+
 	[Tags("Authentication")]
 	public class LoginController:MyRecipeBookBaseController
 	{
@@ -38,8 +39,10 @@ namespace MyRecipeBook.API.Controllers
 			[FromServices] IExternalLoginUseCase useCase
 			)
 		{
-			var authenticate = await Request.HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+			var allowedUrls = new[] { "/", "/login", "/logout" };
 
+			var authenticate = await Request.HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            
 			if(IsNotAuthenticated(authenticate))
 			{
 				return Challenge(GoogleDefaults.AuthenticationScheme);
@@ -54,6 +57,10 @@ namespace MyRecipeBook.API.Controllers
 
 				var token = await useCase.Execute(name, email);
 
+				if(!allowedUrls.Contains(returnUrl))
+				{
+					returnUrl = "/";
+				}
 				return Redirect($"{returnUrl}{token}");
 			}
 		}

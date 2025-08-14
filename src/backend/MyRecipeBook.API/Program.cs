@@ -28,7 +28,6 @@ var gitHubUrl = configuration.GetValue<string>("Settings:OpenApi:GitHubUrl")!;
 var mitLicenseUrl = configuration.GetValue<string>("Settings:OpenApi:MitLicenseUrl")!;
 var contactName = configuration.GetValue<string>("Settings:OpenApi:ContactName")!;
 var licenseName = configuration.GetValue<string>("Settings:OpenApi:LicenseName")!;
-var serviceBusConnectionString = configuration.GetValue<string>("Settings:ServiceBus:DeleteUserAccount");
 
 
 

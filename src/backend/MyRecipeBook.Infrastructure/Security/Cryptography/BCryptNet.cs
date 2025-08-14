@@ -11,7 +11,7 @@ namespace MyRecipeBook.Infrastructure.Security.Cryptography
 
 		public Boolean Isvalid(String password, String hashedPassword)
 		{
-			return BCrypt.Net.BCrypt.Verify(password, hashedPassword); ;
+			return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
 		}
 	}
 }
