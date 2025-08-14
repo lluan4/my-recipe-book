@@ -71,7 +71,7 @@ namespace UseCases.Test.Recipe.Image
 
 		}
 
-		private static AddUpdateImageCoverUseCase CreateUseCase(MyRecipeBook.Domain.Entities.User user, MyRecipeBook.Domain.Entities.Recipe recipe = null)
+		private static AddUpdateImageCoverUseCase CreateUseCase(MyRecipeBook.Domain.Entities.User user, MyRecipeBook.Domain.Entities.Recipe? recipe = null)
 		{
 			var loggedUser = LoggedUserBuilder.Build(user);
 			var recipeUpdateOnlyRepository = new RecipeUpdateOnlyRepositoryBuilder().GetById(user, recipe).Build();

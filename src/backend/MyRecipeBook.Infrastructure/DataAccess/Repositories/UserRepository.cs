@@ -57,8 +57,6 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 		  .Select(r => r.Id)
 		  .ToListAsync();
 
-			var dishtypes = _dbContext.RecipesDishTypes.Where(rdt => recipeIds.Contains(rdt.RecipeId));
-
 			var recipes = _dbContext.Recipes.Where(r => recipeIds.Contains(r.Id));
 
 			_dbContext.Recipes.RemoveRange(recipes);

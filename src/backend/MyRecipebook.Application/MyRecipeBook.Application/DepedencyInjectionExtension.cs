@@ -74,6 +74,7 @@ namespace MyRecipeBook.Application
 			services.AddScoped<IDeleteRecipeUseCase, DeleteRecipeUseCase>();
 			services.AddScoped<IGeneratedRecipeUseCase, GeneratedRecipeUseCase>();
 			services.AddScoped<IAddUpdateImageCoverUseCase, AddUpdateImageCoverUseCase>();
+			services.AddScoped<RecipeRegisterServices, RecipeRegisterServices>();
 
 			services.AddScoped<IGetDashboardUseCase, GetDashboardUseCase>();
 

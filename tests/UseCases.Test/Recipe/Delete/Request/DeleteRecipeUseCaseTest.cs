@@ -5,7 +5,7 @@ using MyRecipeBook.Application.UseCases.Recipe.Delete;
 using MyRecipeBook.Exceptions.ExceptionsBase;
 using Shouldly;
 
-namespace UseCases.Test.Recipe.Delete
+namespace UseCases.Test.Recipe.Delete.Request
 {
 	public class DeleteRecipeUseCaseTest
 	{

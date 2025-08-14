@@ -26,6 +26,7 @@ var gitHubUrl = configuration.GetValue<string>("Settings:OpenApi:GitHubUrl")!;
 var mitLicenseUrl = configuration.GetValue<string>("Settings:OpenApi:MitLicenseUrl")!;
 var contactName = configuration.GetValue<string>("Settings:OpenApi:ContactName")!;
 var licenseName = configuration.GetValue<string>("Settings:OpenApi:LicenseName")!;
+var serviceBusConnectionString = configuration.GetValue<string>("Settings:ServiceBus:DeleteUserAccount");
 
 
 
@@ -120,7 +121,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		 options.TokenValidationParameters = new TokenValidationParameters { };
 	 });
 
-builder.Services.AddHostedService<DeleteUserService>();
+if(!string.IsNullOrWhiteSpace(serviceBusConnectionString))
+{
+	builder.Services.AddHostedService<DeleteUserService>();
+}
 
 var app = builder.Build();
 

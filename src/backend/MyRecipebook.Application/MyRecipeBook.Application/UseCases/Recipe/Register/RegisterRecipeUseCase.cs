@@ -24,48 +24,41 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Register
 		private readonly IDifficultyReadOnlyRepository _repositoryDifficultyTime;
 		private readonly IDishTypeReadOnlyRepository _repositoryDishType;
 
-		private readonly ILoggedUser _loggedUser;
-		private readonly IUnitOfWork _unitOfWork;
-		private readonly IMapper _mapper;
-		private readonly IBlobStorageService _blobStorageService;
+		private readonly RecipeRegisterServices _recipeRegisterServices;
+
+
 
 		public RegisterRecipeUseCase(
 			 IRecipeWriteOnlyRepository repository,
 			 ICookingTimeReadOnlyRepository repositoryCookingTime,
 			 IDifficultyReadOnlyRepository repositoryDifficultyTime,
 			 IDishTypeReadOnlyRepository repositoryDishType,
-			 ILoggedUser loggedUser,
-			 IUnitOfWork unitOfWork,
-			 IMapper mapper,
-			 IBlobStorageService blobStorageService
+			 RecipeRegisterServices recipeRegisterServices
 			 )
 		{
 			_repository = repository;
 			_repositoryCookingTime = repositoryCookingTime;
 			_repositoryDifficultyTime = repositoryDifficultyTime;
 			_repositoryDishType = repositoryDishType;
-			_loggedUser = loggedUser;
-			_unitOfWork = unitOfWork;
-			_mapper = mapper;
-			_blobStorageService = blobStorageService;
+			_recipeRegisterServices = recipeRegisterServices;
 		}
 
 		public async Task<ResponseRegisteredRecipeJson> Execute(RequestRegisterRecipeFormData request)
 		{
 			await ValidateAsync(request);
 
-			var loggedUser = await _loggedUser.User();
+			var loggedUser = await _recipeRegisterServices._loggedUser.User();
 
-			var recipe = _mapper.Map<Domain.Entities.Recipe>(request);
+			var recipe = _recipeRegisterServices._mapper.Map<Domain.Entities.Recipe>(request);
 			recipe.UserId = loggedUser.Id;
 
 			var instructions = request.Instructions.OrderBy(i => i.Step).ToList();
 			for(var i = 0;i < instructions.Count;i++)
 				instructions[i].Step = i + 1;
 
-			recipe.Instructions = _mapper.Map<IList<Domain.Entities.Instruction>>(instructions);
+			recipe.Instructions = _recipeRegisterServices._mapper.Map<IList<Domain.Entities.Instruction>>(instructions);
 
-			recipe.RecipeDishTypes = _mapper.Map<IList<Domain.Entities.RecipeDishType>>(request.DishTypes);
+			recipe.RecipeDishTypes = _recipeRegisterServices._mapper.Map<IList<Domain.Entities.RecipeDishType>>(request.DishTypes);
 
 			if(request.Image is not null)
 			{
@@ -78,14 +71,14 @@ namespace MyRecipeBook.Application.UseCases.Recipe.Register
 
 				recipe.ImageIdentifier = imageIdentifier;
 
-				await _blobStorageService.Upload(loggedUser, fileStream, recipe.ImageIdentifier);
+				await _recipeRegisterServices._blobStorageService.Upload(loggedUser, fileStream, recipe.ImageIdentifier);
 			}
 
 			await _repository.Add(recipe);
 
-			await _unitOfWork.Commit();
+			await _recipeRegisterServices._unitOfWork.Commit();
 
-			return _mapper.Map<ResponseRegisteredRecipeJson>(recipe);
+			return _recipeRegisterServices._mapper.Map<ResponseRegisteredRecipeJson>(recipe);
 		}
 
 		private async Task ValidateAsync(RequestRecipeJson request)
