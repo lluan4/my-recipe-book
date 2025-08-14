@@ -7,5 +7,6 @@ namespace MyRecipeBook.Domain.Services.Storage
 		Task Upload(User user, Stream file, string fileName);
 		Task<string> GetFileUrl(User user, string imageIdentifier);
 		Task Delete(User user, string imageIdentifier);
+		Task DeleteContainer(Guid userIdentifier);
 	}
 }

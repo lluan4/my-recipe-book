@@ -108,7 +108,13 @@ namespace UseCases.Test.Recipe.Register
 			var repositoryDishType = new DishTypeReadOnlyRepositoryBuilder();
 			repositoryDishType.ExistsAnyDishType();
 
-			return new RegisterRecipeUseCase(repository, repositoryCookingTime.Build(), repositoryDifficulty.Build(), repositoryDishType.Build(), loggedUser, unitOfWork, mapper, blobStorage);
+			var repositoryCategory = new RecipeRegisterServices(
+				loggedUser: loggedUser, 
+				blobStorageService: blobStorage, 
+				unitOfWork: unitOfWork, 
+				mapper: mapper);
+
+			return new RegisterRecipeUseCase(repository, repositoryCookingTime.Build(), repositoryDifficulty.Build(), repositoryDishType.Build(), repositoryCategory);
 		}
 
 	}
