@@ -1,6 +1,4 @@
-﻿using BCrypt.Net;
-using FluentMigrator;
-using Microsoft.Extensions.Configuration;
+﻿using FluentMigrator;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Enums;
 using MyRecipeBook.Infrastructure.Security.Cryptography;
@@ -10,12 +8,6 @@ namespace MyRecipeBook.Infrastructure.Migrations.Versions;
 [Migration(DatabaseVersions.SEED_ADMIN_DATA, "Insert admin user and sample recipes")]
 public class Version0000003:VersionBase
 {
-	private readonly IConfiguration _configuration;
-	public Version0000003(IConfiguration configuration)
-	{
-		_configuration = configuration;
-	}
-
 	public override void Up()
 	{
 		var adminUserIdentifier = Guid.NewGuid();
