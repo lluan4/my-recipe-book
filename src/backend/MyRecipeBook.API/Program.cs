@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyRecipeBook.API.BackgroundServices;
 using MyRecipeBook.API.Converters;
 using MyRecipeBook.API.Filters;
 using MyRecipeBook.API.Middleware;
@@ -25,6 +26,7 @@ var gitHubUrl = configuration.GetValue<string>("Settings:OpenApi:GitHubUrl")!;
 var mitLicenseUrl = configuration.GetValue<string>("Settings:OpenApi:MitLicenseUrl")!;
 var contactName = configuration.GetValue<string>("Settings:OpenApi:ContactName")!;
 var licenseName = configuration.GetValue<string>("Settings:OpenApi:LicenseName")!;
+var serviceBusConnectionString = configuration.GetValue<string>("Settings:ServiceBus:DeleteUserAccount");
 
 
 
@@ -119,8 +121,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		 options.TokenValidationParameters = new TokenValidationParameters { };
 	 });
 
+if(!string.IsNullOrWhiteSpace(serviceBusConnectionString))
+{
+	builder.Services.AddHostedService<DeleteUserService>();
+}
 
 var app = builder.Build();
+
 
 
 if(app.Environment.IsDevelopment())
