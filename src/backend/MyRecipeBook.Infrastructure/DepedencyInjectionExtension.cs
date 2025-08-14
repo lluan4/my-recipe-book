@@ -11,6 +11,7 @@ using MyRecipeBook.Domain.Repositories.Difficulty;
 using MyRecipeBook.Domain.Repositories.DishType;
 using MyRecipeBook.Domain.Repositories.Recipe;
 using MyRecipeBook.Domain.Repositories.RecipesDishType;
+using MyRecipeBook.Domain.Repositories.Token;
 using MyRecipeBook.Domain.Repositories.User;
 using MyRecipeBook.Domain.Security.Cryptography;
 using MyRecipeBook.Domain.Security.Tokens;
@@ -81,6 +82,8 @@ namespace MyRecipeBook.Infrastructure
 			services.AddScoped<IRecipeUpdateOnlyRepository, RecipeRepository>();
 
 			services.AddScoped<IRecipesDishTypeWriteOnlyRepository, RecipesDishTypeRepository>();
+
+			services.AddScoped<ITokenRepository, TokenRepository>();
 
 		}
 
