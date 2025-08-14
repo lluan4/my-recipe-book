@@ -43,9 +43,7 @@ namespace MyRecipeBook.Application.UseCases.User.ChangePassword
         {
             var result = new ChangePasswordValidator().Validate(request);
 
-            var currentPasswordEncripted = _passwordEncripter.Encrypt(request.Password);
-
-            if (currentPasswordEncripted.Equals(loggedUser.Password).isFalse())
+            if (_passwordEncripter.Isvalid(request.Password,loggedUser.Password).isFalse())
                 result.Errors.Add(new FluentValidation.Results.ValidationFailure(string.Empty, ResourceMessagesException.PASSWORD_DIFFERENT_CURRENT_PASSWORD));
 
             if (result.IsValid.isFalse())

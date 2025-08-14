@@ -41,7 +41,7 @@ namespace MyRecipeBook.Infrastructure
 			AddRepositories(services);
 			AddLoggedUser(services);
 			AddTokens(services, configuration);
-			AddPasswordEncripter(services, configuration);
+			AddPasswordEncripter(services);
 			AddGeminiAI(services, configuration);
 			AddAzureStorage(services, configuration);
 			AddQueue(services, configuration);
@@ -132,11 +132,9 @@ namespace MyRecipeBook.Infrastructure
 
 		private static void AddLoggedUser(IServiceCollection services) => services.AddScoped<ILoggedUser, LoggedUser>();
 
-		private static void AddPasswordEncripter(IServiceCollection services, IConfiguration configuration)
+		private static void AddPasswordEncripter(IServiceCollection services)
 		{
-			var additionalKey = configuration.GetValue<string>("Settings:Password:AdditionalKey");
-
-			services.AddScoped<IPasswordEncripter>(option => new Sha512Encripter(additionalKey!));
+			services.AddScoped<IPasswordEncripter, BCryptNet>();
 		}
 
 		private static void AddGeminiAI(IServiceCollection services, IConfiguration configuration)
