@@ -1,11 +1,9 @@
-﻿using FluentMigrator;
+﻿using BCrypt.Net;
+using FluentMigrator;
 using Microsoft.Extensions.Configuration;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Enums;
 using MyRecipeBook.Infrastructure.Security.Cryptography;
-using System.Data;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace MyRecipeBook.Infrastructure.Migrations.Versions;
 
@@ -24,10 +22,9 @@ public class Version0000003 : VersionBase
         var additionalKey = _configuration["Settings:Password:AdditionalKey"]
                             ?? throw new InvalidOperationException("Settings:Password:AdditionalKey configuration not found");
 
-        var EncryptPassword = new Sha512Encripter(additionalKey);                            
-        var adminPassword = EncryptPassword.Encrypt("12345678");
+		var adminPassword = new BCryptNet().Encrypt("12345678");
 
-        var now = DateTime.UtcNow;
+		var now = DateTime.UtcNow;
 
         Insert.IntoTable(TableName<User>())
             .Row(new

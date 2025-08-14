@@ -181,8 +181,8 @@ void MigrateDatabase()
 
 void AddGoogleAuthentication()
 {
-	var clientId = builder.Configuration.GetValue<string>("Authentication:Google:ClientId")!;
-	var clientSecret = builder.Configuration.GetValue<string>("Authentication:Google:ClientSecret")!;
+	var clientId = builder.Configuration.GetValue<string>("Settings:Google:ClientId")!;
+	var clientSecret = builder.Configuration.GetValue<string>("Settings:Google:ClientSecret")!;
 
 	builder.Services.AddAuthentication(config =>
 	{

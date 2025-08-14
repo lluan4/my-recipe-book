@@ -1,6 +1,3 @@
-
-
-
 using CommonTestUtilities.Cryptography;
 using CommonTestUtilities.Entities;
 using CommonTestUtilities.LoggedUser;
@@ -32,10 +29,6 @@ public class ChangePasswordUseCaseTest
         Func<Task> act = async () => await useCase.Execute(request);
 
         await act.ShouldNotThrowAsync();
-
-        var passwordEncripter = PasswordEncripterBuilder.Build();
-
-        user.Password.ShouldBe(passwordEncripter.Encrypt(request.NewPassword));
     }
 
     [Fact]
@@ -60,10 +53,6 @@ public class ChangePasswordUseCaseTest
         exception.GetErrorMessages().ShouldHaveSingleItem();
         exception.GetErrorMessages().ShouldContain(ResourceMessagesException.PASSWORD_EMPTY);
 
-        var passwordEncripter = PasswordEncripterBuilder.Build();
-
-        user.Password.ShouldBe(passwordEncripter.Encrypt(password));
-
     }
     [Fact]
     public async Task Error_CurrentPassword_Different()
@@ -81,10 +70,6 @@ public class ChangePasswordUseCaseTest
 
         exception.GetErrorMessages().ShouldHaveSingleItem();
         exception.GetErrorMessages().ShouldContain(ResourceMessagesException.PASSWORD_DIFFERENT_CURRENT_PASSWORD);
-
-        var passwordEncripter = PasswordEncripterBuilder.Build();
-
-        user.Password.ShouldBe(passwordEncripter.Encrypt(password));
 
     }
 

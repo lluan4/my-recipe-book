@@ -55,7 +55,7 @@ namespace UseCases.Test.Login.DoLogin
             var accessTokenGenerator = JwtTokensGeneratorBuilder.Build();
 
             if (user is not null)
-                userReadOnlyRepositoryBuilder.GetByEmailAndPassword(user);
+                userReadOnlyRepositoryBuilder.GetByEmail(user);
 
 
 
