@@ -10,7 +10,7 @@ namespace MyRecipeBook.Infrastructure.Security.Tokens.Access.Generator
 		private readonly uint _expirationTimeMinutes = expirationTimeMinutes;
 		private readonly string _signingKey = signingKey;
 
-		public string Generate(Guid userIdentifier, string? refreshTokenId)
+		public string Generate(Guid userIdentifier, string? refreshTokenId = null)
 		{
 
 			var claims = new List<Claim>()

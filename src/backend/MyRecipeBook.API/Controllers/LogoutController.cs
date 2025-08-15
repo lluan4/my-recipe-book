@@ -7,6 +7,7 @@ namespace MyRecipeBook.API.Controllers
 	{
 		[HttpPost("logout")]
 		[SwaggerOperation(Summary = "Logout", Description = "Remove o refresh token cookie")]
+		[ProducesResponseType<int>(StatusCodes.Status200OK)]
 		public IActionResult Logout()
 		{
 			Response.Cookies.Delete("refreshToken");
