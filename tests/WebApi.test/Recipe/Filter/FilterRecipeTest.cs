@@ -59,8 +59,6 @@ namespace WebApi.test.Recipe.Filter
 
 			responseData.RootElement.GetProperty("recipes").EnumerateArray().ShouldNotBeEmpty();
 
-
-
 		}
 
 		[Fact]
