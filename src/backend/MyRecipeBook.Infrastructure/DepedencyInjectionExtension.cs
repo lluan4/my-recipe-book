@@ -11,6 +11,7 @@ using MyRecipeBook.Domain.Repositories.Difficulty;
 using MyRecipeBook.Domain.Repositories.DishType;
 using MyRecipeBook.Domain.Repositories.Recipe;
 using MyRecipeBook.Domain.Repositories.RecipesDishType;
+using MyRecipeBook.Domain.Repositories.Token;
 using MyRecipeBook.Domain.Repositories.User;
 using MyRecipeBook.Domain.Security.Cryptography;
 using MyRecipeBook.Domain.Security.Tokens;
@@ -24,6 +25,7 @@ using MyRecipeBook.Infrastructure.Extensions;
 using MyRecipeBook.Infrastructure.Security.Cryptography;
 using MyRecipeBook.Infrastructure.Security.Tokens.Access.Generator;
 using MyRecipeBook.Infrastructure.Security.Tokens.Access.Validator;
+using MyRecipeBook.Infrastructure.Security.Tokens.Refresh;
 using MyRecipeBook.Infrastructure.Services.GeminiApi;
 using MyRecipeBook.Infrastructure.Services.LoggedUser;
 using MyRecipeBook.Infrastructure.Services.ServiceBus;
@@ -81,6 +83,9 @@ namespace MyRecipeBook.Infrastructure
 			services.AddScoped<IRecipeUpdateOnlyRepository, RecipeRepository>();
 
 			services.AddScoped<IRecipesDishTypeWriteOnlyRepository, RecipesDishTypeRepository>();
+
+			services.AddScoped<ITokenRepository, TokenRepository>();
+			services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
 
 		}
 

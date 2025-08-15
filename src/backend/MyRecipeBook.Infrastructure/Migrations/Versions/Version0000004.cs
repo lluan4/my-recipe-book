@@ -3,7 +3,7 @@ using MyRecipeBook.Domain.Entities;
 
 namespace MyRecipeBook.Infrastructure.Migrations.Versions;
 
-[Migration(DatabaseVersions.IMAGES_FOR_RECIPES, "Add collumn on recipe table to save images")]
+[Migration(DatabaseVersions.IMAGES_FOR_RECIPES, "Add column on recipe table to save images")]
 public class Version0000004:VersionBase
 {
 	public override void Up()

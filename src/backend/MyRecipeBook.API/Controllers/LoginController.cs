@@ -21,7 +21,6 @@ namespace MyRecipeBook.API.Controllers
 			 OperationId = "LoginUser"
 		)]
 		[ProducesResponseType(typeof(ResponseRegisteredUserJson), StatusCodes.Status200OK)]
-		[ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> Login(
 			 [FromServices] IDoLoginUseCase useCase,
@@ -42,7 +41,7 @@ namespace MyRecipeBook.API.Controllers
 			var allowedUrls = new[] { "/", "/login", "/logout" };
 
 			var authenticate = await Request.HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-            
+
 			if(IsNotAuthenticated(authenticate))
 			{
 				return Challenge(GoogleDefaults.AuthenticationScheme);
