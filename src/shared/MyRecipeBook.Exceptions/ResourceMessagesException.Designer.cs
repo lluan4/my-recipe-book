@@ -97,6 +97,15 @@ namespace MyRecipeBook.Exceptions {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expired Session.
+        /// </summary>
+        public static string EXPIRED_SESSION {
+            get {
+                return ResourceManager.GetString("EXPIRED_SESSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The field &apos;{0}&apos; contains duplicate values..
         /// </summary>
         public static string FIELD_DUPLICATE_VALUE {
@@ -183,6 +192,15 @@ namespace MyRecipeBook.Exceptions {
         public static string FIELD_VALUE_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("FIELD_VALUE_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Session.
+        /// </summary>
+        public static string INVALID_SESSION {
+            get {
+                return ResourceManager.GetString("INVALID_SESSION", resourceCulture);
             }
         }
         

@@ -37,7 +37,7 @@ namespace MyRecipeBook.Application.UseCases.Login.External
 				await _unitOfWork.Commit();
 			}
 
-			return _accessTokenGenerator.Generate(user.UserIdentifier);
+			return _accessTokenGenerator.Generate(user.UserIdentifier, null);
 		}
 	}
 }

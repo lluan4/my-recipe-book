@@ -5,31 +5,31 @@ using System.Text.Json;
 
 namespace WebApi.test.Dashboard
 {
-    public class GetDashboardTest : MyRecipeBookClassFixture
-    {
-        private const string METHOD = "dashboard";
+	public class GetDashboardTest:MyRecipeBookClassFixture
+	{
+		private const string METHOD = "dashboard";
 
-        private readonly Guid _userIdentifier;
+		private readonly Guid _userIdentifier;
 
-        public GetDashboardTest(CustomWebApplicationFactory factory) : base(factory)
-        {
-            _userIdentifier = factory.GetUserIdentifier();
-        }
+		public GetDashboardTest(CustomWebApplicationFactory factory) : base(factory)
+		{
+			_userIdentifier = factory.GetUserIdentifier();
+		}
 
-        [Fact]
-        public async Task Success()
-        {
-            var token = JwtTokensGeneratorBuilder.Build().Generate(_userIdentifier);
+		[Fact]
+		public async Task Success()
+		{
+			var token = JwtTokensGeneratorBuilder.Build().Generate(_userIdentifier, null);
 
-            var response = await DoGet(method: METHOD, token: token);
+			var response = await DoGet(method: METHOD, token: token);
 
-            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+			response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            await using var responseBody = await response.Content.ReadAsStreamAsync();
+			await using var responseBody = await response.Content.ReadAsStreamAsync();
 
-            var responseData = await JsonDocument.ParseAsync(responseBody);
+			var responseData = await JsonDocument.ParseAsync(responseBody);
 
-            responseData.RootElement.GetProperty("recipes").GetArrayLength().ShouldBeGreaterThan(0);
-        }
-    }
+			responseData.RootElement.GetProperty("recipes").GetArrayLength().ShouldBeGreaterThan(0);
+		}
+	}
 }

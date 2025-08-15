@@ -6,6 +6,8 @@ namespace MyRecipeBook.Domain.Repositories.Token
 	{
 		Task<RefreshToken?> Get(string refreshToken);
 
+		Task SaveNewRefreshToken(RefreshToken refreshToken);
+
 	}
 
 }

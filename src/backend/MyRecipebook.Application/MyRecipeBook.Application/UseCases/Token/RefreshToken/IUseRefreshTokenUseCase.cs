@@ -1,10 +1,11 @@
 ﻿using MyRecipeBook.Communication.Request;
+using MyRecipeBook.Communication.Response;
 
 namespace MyRecipeBook.Application.UseCases.Token.RefreshToken
 {
 	public interface IUseRefreshTokenUseCase
 	{
-		Task Execute(RequestNewTokenJson request);
+		Task<ResponseTokensJson> Execute(RequestNewTokenJson request);
 
 	}
 }

@@ -76,10 +76,13 @@ namespace MyRecipeBook.Application
 			services.AddScoped<IGeneratedRecipeUseCase, GeneratedRecipeUseCase>();
 			services.AddScoped<IAddUpdateImageCoverUseCase, AddUpdateImageCoverUseCase>();
 			services.AddScoped<RecipeRegisterServices, RecipeRegisterServices>();
+			services.AddScoped<RegisterServices, RegisterServices>();
 
 			services.AddScoped<IGetDashboardUseCase, GetDashboardUseCase>();
 
 			services.AddScoped<IUseRefreshTokenUseCase, UseRefreshTokenUseCase>();
+
+			services.AddHttpContextAccessor();
 
 		}
 

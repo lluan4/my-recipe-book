@@ -14,10 +14,19 @@ namespace MyRecipeBook.Infrastructure.DataAccess.Repositories
 			return await _dbContext
 				.RefreshToken
 				.AsNoTracking()
-				.Include(token => token.User)
+				.Include(t => t.User)
 				.FirstOrDefaultAsync(t => t.Value.Equals(refreshToken));
+		}
 
+		public async Task SaveNewRefreshToken(RefreshToken refreshToken)
+		{
+			var tokens = _dbContext
+				.RefreshToken
+				.Where(t => t.UserId == refreshToken.UserId);
 
+			_dbContext.RefreshToken.RemoveRange(tokens);
+
+			await _dbContext.RefreshToken.AddAsync(refreshToken);
 		}
 	}
 }
